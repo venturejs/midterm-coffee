@@ -264,7 +264,7 @@ a { color: inherit; text-underline-offset: 3px; }
     <header>
       <span class="eyebrow">개표 상황판 · 실시간</span>
       <h2>지금 어디까지 왔나</h2>
-      <p class="muted small">위쪽 확률은 Polymarket 가격으로 1분마다 자동 갱신돼요. 개표가 진행되면 결과가 굳어지는 쪽으로 빠르게 움직여요. 확정 의석은 진행자가 언론 발표를 보고 입력해요.</p>
+      <p class="muted small">위쪽 확률은 미국 예측시장 Polymarket의 가격 데이터로 1분마다 자동 갱신돼요(사이트는 국내 접속 차단이라 링크는 넣지 않았어요). 개표가 진행되면 결과가 굳어지는 쪽으로 빠르게 움직여요. 확정 의석은 진행자가 언론 발표를 보고 입력해요.</p>
     </header>
     <div class="panel" id="liveHead"></div>
     <div class="live-grid">
@@ -606,8 +606,7 @@ function renderLive() {
         <span class="small muted">${lv.at ? `확정 의석 ${kstFmt.format(lv.at)} 진행자 입력` : '확정 의석은 개표가 시작되면 진행자가 입력해요'}${L.at ? ` · 확률 ${kstFmt.format(L.at)} 갱신` : L.err ? ' · 확률을 불러오지 못했어요' : ''}</span>
       </div></div>
     <div class="live-links">
-      <a href="https://polymarket.com/event/which-party-will-win-the-house-in-2026" target="_blank" rel="noopener">Polymarket 하원</a>
-      <a href="https://polymarket.com/event/which-party-will-win-the-senate-in-2026" target="_blank" rel="noopener">Polymarket 상원</a>
+      <a href="https://search.naver.com/search.naver?where=news&query=%EB%AF%B8%EA%B5%AD+%EC%A4%91%EA%B0%84%EC%84%A0%EA%B1%B0+%EA%B0%9C%ED%91%9C" target="_blank" rel="noopener">네이버 뉴스 · 개표 속보</a>
       <a href="https://votes.decisiondeskhq.com/forecast/2026" target="_blank" rel="noopener">Decision Desk HQ</a>
     </div>`;
   for (const k of ['house', 'senate']) {
