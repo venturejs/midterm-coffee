@@ -153,6 +153,35 @@ a { color: inherit; text-underline-offset: 3px; }
 .admin { border: 1.5px dashed var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
 .admin .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 
+/* 개표 상황판 */
+.live-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.live-card { gap: 12px; }
+.live-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.live-top h3 { font-family: var(--display); font-weight: 400; font-size: 24px; }
+.prob { display: flex; align-items: baseline; gap: 8px; }
+.prob b { font-family: var(--mono); font-weight: 500; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.prob .lbl { font-size: 13px; color: var(--muted); }
+.chg { font-size: 12px; font-variant-numeric: tabular-nums; }
+.chg.up { color: var(--dem); } .chg.dn { color: var(--rep); }
+.seatbar { position: relative; height: 30px; border-radius: 8px; overflow: hidden; display: flex; background: var(--sunk); }
+.seatbar i { display: flex; align-items: center; font-style: normal; font-size: 12px; font-weight: 700; color: #fff; padding: 0 8px; white-space: nowrap; font-variant-numeric: tabular-nums; transition: width .6s; }
+.seatbar .d { background: var(--dem); }
+.seatbar .r { background: var(--rep); margin-left: auto; justify-content: flex-end; }
+.seatbar .maj { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--fg); }
+.seatleg { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; gap: 8px; flex-wrap: wrap; }
+.headline { display: flex; gap: 10px; align-items: flex-start; }
+.headline .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rep); margin-top: 6px; flex: none; animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+.live-links { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; }
+.live-links a { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; text-decoration: none; background: var(--surface); }
+.oddsbar { display: flex; height: 20px; border-radius: 5px; overflow: hidden; min-width: 140px; background: var(--sunk); }
+.oddsbar i { font-style: normal; font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; padding: 0 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.oddsbar .d { background: var(--dem); } .oddsbar .r { background: var(--rep); justify-content: flex-end; margin-left: auto; }
+.called { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 5px; margin-left: 6px; white-space: nowrap; }
+.called.d { background: var(--dem); color: #fff; } .called.r { background: var(--rep); color: #fff; }
+@media (max-width: 880px) { .live-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .headline .dot { animation: none; } .seatbar i { transition: none; } }
+
 /* 판세 근거 */
 .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .case { border-top: 4px solid var(--line); }
@@ -229,6 +258,20 @@ a { color: inherit; text-underline-offset: 3px; }
   </div>
 
   <div class="timeline" id="timeline"></div>
+
+  <!-- 개표 상황판 -->
+  <section class="section" id="live-sec">
+    <header>
+      <span class="eyebrow">개표 상황판 · 실시간</span>
+      <h2>지금 어디까지 왔나</h2>
+      <p class="muted small">위쪽 확률은 Polymarket 가격으로 1분마다 자동 갱신돼요. 개표가 진행되면 결과가 굳어지는 쪽으로 빠르게 움직여요. 확정 의석은 진행자가 언론 발표를 보고 입력해요.</p>
+    </header>
+    <div class="panel" id="liveHead"></div>
+    <div class="live-grid">
+      <div class="panel live-card" id="liveHouse"></div>
+      <div class="panel live-card" id="liveSenate"></div>
+    </div>
+  </section>
 
   <!-- 참여 -->
   <section class="section" id="play-sec">
@@ -318,23 +361,14 @@ a { color: inherit; text-underline-offset: 3px; }
     </div>
 
     <div class="panel">
-      <h3>상원 승부처 8곳</h3>
+      <h3>상원 승부처 8곳 <span class="muted small" style="font-weight:400" id="raceUpd"></span></h3>
       <div class="board-wrap">
         <table class="races">
-          <thead><tr><th>주</th><th>현재 의석</th><th>예측시장 기울기</th><th>포인트</th></tr></thead>
-          <tbody>
-            <tr><td>메인</td><td>공화</td><td><span class="lean d">민주 우세</span></td><td>중도파 콜린스 의원이 관세·난방유 가격 여파로 고전. 민주 탈환 가능성 가장 높게 평가</td></tr>
-            <tr><td>텍사스</td><td>공화</td><td><span class="lean d">민주 우세</span></td><td>민주 탈라리코 후보가 여론조사에서 꾸준히 앞섬. 공화 팩스턴 후보는 모금에서도 열세</td></tr>
-            <tr><td>오하이오</td><td>공화</td><td><span class="lean d">민주 우세</span></td><td>밴스 부통령의 기반 지역. 암호화폐 업계 슈퍼PAC이 민주 셰로드 브라운 후보 낙선에 5,500만 달러 투입</td></tr>
-            <tr><td>미시간</td><td>민주</td><td><span class="lean d">민주 우세</span></td><td>민주 엘사예드 후보가 약 5%p 앞서지만 당내 분열이 변수</td></tr>
-            <tr><td>캔자스</td><td>공화</td><td><span class="lean t">접전</span></td><td>예측시장에서 가장 크게 움직인 곳. 물가와 쇠고기 수입 확대에 대한 농민 불만</td></tr>
-            <tr><td>알래스카</td><td>공화</td><td><span class="lean t">접전</span></td><td>동명이인 후보 논란. 결과 확정이 늦고, 다수당을 가를 경우 공방이 길어질 수 있음</td></tr>
-            <tr><td>아이오와</td><td>공화</td><td><span class="lean r">공화 우세</span></td><td>격전지 중 공화가 지킬 가능성이 가장 높다는 평가</td></tr>
-            <tr><td>사우스캐롤라이나</td><td>공화</td><td><span class="lean r">공화 우세</span></td><td>그레이엄 의원 지역. 예측시장에서 공화 우세 유지</td></tr>
-          </tbody>
+          <thead><tr><th>주</th><th>현재</th><th>후보 (민주 vs 공화)</th><th>실시간 승리 확률</th><th>포인트</th></tr></thead>
+          <tbody id="raceRows"></tbody>
         </table>
       </div>
-      <p class="muted small">예측시장 기울기는 Kalshi·Polymarket 기준(11/1~2). 민주당이 수성해야 하는 미네소타·뉴햄프셔는 민주 약우세로 분류돼요.</p>
+      <p class="muted small">확률은 Polymarket 주별 상원 시장 가격이에요. 한쪽이 97%를 넘으면 사실상 결정된 것으로 표시해요. 민주당이 지켜야 하는 미네소타·뉴햄프셔는 민주 약우세로 분류돼요.</p>
     </div>
   </section>
 
@@ -520,6 +554,91 @@ async function commit(mutate, message) {
   throw { code: 'conflict' };
 }
 
+// ───────── 개표 상황판 ─────────
+const PM = 'https://gamma-api.polymarket.com/events?slug=';
+const CHAMBERS = {
+  house:  { slug: 'which-party-will-win-the-house-in-2026',  name: '하원', total: 435, maj: 218, base: { D: 0, R: 0 }, races: 435 },
+  senate: { slug: 'which-party-will-win-the-senate-in-2026', name: '상원', total: 100, maj: 51,  base: { D: 34, R: 31 }, races: 35 },
+};
+const RACES = [
+  { st: '메인', slug: 'maine', now: 'R', d: 'Troy Jackson', r: 'Susan Collins', note: '중도파 콜린스 현역이 관세·난방유 가격 여파로 고전' },
+  { st: '텍사스', slug: 'texas', now: 'R', d: 'James Talarico', r: 'Ken Paxton', note: '탈라리코가 여론조사 우위, 팩스턴은 모금에서도 열세' },
+  { st: '오하이오', slug: 'ohio', now: 'R', d: 'Sherrod Brown', r: 'Jon Husted', note: '밴스 부통령 기반. 암호화폐 슈퍼PAC이 브라운 낙선에 5,500만 달러' },
+  { st: '미시간', slug: 'michigan', now: 'D', d: 'Abdul El-Sayed', r: 'Mike Rogers', note: '민주가 지켜야 하는 경합. 당내 분열이 변수' },
+  { st: '캔자스', slug: 'kansas', now: 'R', d: 'Adam Hamilton', r: 'Roger Marshall', note: '1932년 이후 민주 상원의원 없음. 농민 불만' },
+  { st: '알래스카', slug: 'alaska', now: 'R', d: 'Mary Peltola', r: 'Dan Sullivan', note: '동명이인 후보 논란. 확정이 가장 늦을 수 있음' },
+  { st: '아이오와', slug: 'iowa', now: 'R', d: 'Josh Turek', r: 'Ashley Hinson', note: '공화가 지킬 가능성이 가장 높다던 곳' },
+  { st: '사우스캐롤라이나', slug: 'south-carolina', now: 'R', d: 'Annie Andrews', r: 'Graham', note: '그레이엄 지역. 공화 우세 유지' },
+];
+const L = { house: null, senate: null, races: {}, at: null, err: false };
+const yes = m => { try { return parseFloat(JSON.parse(m.outcomePrices)[0]); } catch (e) { return null; } };
+async function loadMarkets() {
+  try {
+    const [h, s] = await Promise.all(['house', 'senate'].map(k => fetch(PM + CHAMBERS[k].slug, { cache: 'no-store' }).then(r => r.json())));
+    for (const [k, ev] of [['house', h], ['senate', s]]) {
+      const m = ev[0].markets.find(x => (x.groupItemTitle || '').startsWith('Democratic'));
+      L[k] = { p: yes(m), d1: m.oneDayPriceChange ?? null, h1: m.oneHourPriceChange ?? null };
+    }
+    const evs = await Promise.all(RACES.map(r => fetch(PM + r.slug + '-senate-election-winner', { cache: 'no-store' }).then(x => x.json()).catch(() => null)));
+    RACES.forEach((r, i) => {
+      const ms = evs[i] && evs[i][0] ? evs[i][0].markets.filter(m => m.outcomePrices) : [];
+      const find = name => ms.find(m => (m.groupItemTitle || '').includes(name));
+      const dm = find(r.d), rm = find(r.r);
+      const pd = dm ? yes(dm) : null, pr = rm ? yes(rm) : null;
+      const nm = m => m ? (m.groupItemTitle || '').replace(/^Sen\.\s*/, '').replace(/\s*\([DR]\)\s*$/, '') : null;
+      L.races[r.slug] = pd != null && pr != null ? { d: pd / (pd + pr), r: pr / (pd + pr), dn: nm(dm), rn: nm(rm) } : null;
+    });
+    L.at = Date.now(); L.err = false;
+  } catch (e) { L.err = true; }
+  renderLive(); renderRaces();
+}
+const pct = v => v == null ? '-' : `${Math.round(v * 100)}%`;
+const chg = v => v == null || Math.abs(v) < .005 ? '' : `<span class="chg ${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲' : '▼'} ${Math.abs(Math.round(v * 100))}%p</span>`;
+
+function renderLive() {
+  const lv = (cfg().live) || {};
+  const now = Date.now();
+  const phase = now < T('2026-11-03T11:00:00Z') ? '투표 시작 전' : now < DEADLINE ? '투표 진행 중' : now < T('2026-11-04T06:00:00Z') ? '개표 진행 중' : '개표 마무리 단계';
+  document.getElementById('liveHead').innerHTML = `
+    <div class="headline"><span class="dot" ${now < DEADLINE ? 'style="animation:none;background:var(--muted)"' : ''}></span>
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+        <b>${phase}${lv.note ? ` · ${esc(lv.note)}` : ''}</b>
+        <span class="small muted">${lv.at ? `확정 의석 ${kstFmt.format(lv.at)} 진행자 입력` : '확정 의석은 개표가 시작되면 진행자가 입력해요'}${L.at ? ` · 확률 ${kstFmt.format(L.at)} 갱신` : L.err ? ' · 확률을 불러오지 못했어요' : ''}</span>
+      </div></div>
+    <div class="live-links">
+      <a href="https://polymarket.com/event/which-party-will-win-the-house-in-2026" target="_blank" rel="noopener">Polymarket 하원</a>
+      <a href="https://polymarket.com/event/which-party-will-win-the-senate-in-2026" target="_blank" rel="noopener">Polymarket 상원</a>
+      <a href="https://votes.decisiondeskhq.com/forecast/2026" target="_blank" rel="noopener">Decision Desk HQ</a>
+    </div>`;
+  for (const k of ['house', 'senate']) {
+    const C = CHAMBERS[k], m = L[k] || {};
+    const d = (k === 'senate' ? C.base.D : 0) + (+lv[k + 'D'] || 0), r = (k === 'senate' ? C.base.R : 0) + (+lv[k + 'R'] || 0);
+    const left = C.total - d - r;
+    const rmaj = k === 'senate' ? 50 : C.maj;
+    const status = d >= C.maj ? `<b style="color:var(--dem)">민주 과반 확정</b>` : r >= rmaj ? `<b style="color:var(--rep)">공화 과반 확정</b>` : `민주 과반까지 ${C.maj - d}석 · 공화 ${k === 'senate' ? '수성' : '과반'}까지 ${rmaj - r}석`;
+    document.getElementById(k === 'house' ? 'liveHouse' : 'liveSenate').innerHTML = `
+      <div class="live-top"><h3>${C.name}</h3>
+        <div class="prob"><span class="lbl">민주 승리 확률</span><b style="color:var(--dem)">${pct(m.p)}</b>${chg(m.h1 ?? m.d1)}</div></div>
+      <div class="bar" style="height:10px"><i class="d" style="width:${(m.p || 0) * 100}%;padding:0"></i><i class="r" style="width:${(1 - (m.p || 0)) * 100}%;padding:0"></i></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span class="small">확정 의석 ${status}</span>
+        <div class="seatbar"><i class="d" style="width:${d / C.total * 100}%">${d ? `민주 ${d}` : ''}</i><i class="r" style="width:${r / C.total * 100}%">${r ? `공화 ${r}` : ''}</i><span class="maj" style="left:${C.maj / C.total * 100}%"></span></div>
+        <div class="seatleg"><span>과반선 ${C.maj}석${k === 'senate' ? ' (50:50이면 공화)' : ''}</span><span>미확정 ${left}석</span><span>${k === 'senate' ? '이번에 안 뽑는 의석 민주 34·공화 31 포함' : `전체 ${C.total}석`}</span></div>
+      </div>`;
+  }
+}
+
+function renderRaces() {
+  const calls = (cfg().live && cfg().live.calls) || {};
+  document.getElementById('raceUpd').textContent = L.at ? `${kstFmt.format(L.at)} 기준` : '';
+  document.getElementById('raceRows').innerHTML = RACES.map(r => {
+    const o = L.races[r.slug], call = calls[r.slug] || (o && o.d > .97 ? 'D' : o && o.r > .97 ? 'R' : null);
+    const bar = o ? `<div class="oddsbar"><i class="d" style="width:${o.d * 100}%">${o.d >= .12 ? pct(o.d) : ''}</i><i class="r" style="width:${o.r * 100}%">${o.r >= .12 ? pct(o.r) : ''}</i></div>` : '<span class="muted small">불러오는 중</span>';
+    return `<tr><td>${r.st}${call ? `<span class="called ${call.toLowerCase()}">${call === 'D' ? '민주' : '공화'} 승</span>` : ''}</td><td>${r.now === 'D' ? '민주' : '공화'}</td>
+      <td class="small">${esc(o?.dn || r.d)} <span class="muted">vs</span> ${esc(o?.rn || r.r)}</td><td>${bar}</td><td class="small">${esc(r.note)}</td></tr>`;
+  }).join('');
+}
+
 // ───────── 점수 ─────────
 function score(p, res) {
   let pts = 0;
@@ -658,7 +777,7 @@ function renderBoard() {
 }
 
 function adminHtml() {
-  const r = cfg().result || {}, c = cfg();
+  const r = cfg().result || {}, c = cfg(), lv = c.live || {}, calls = lv.calls || {};
   const sel = (id, v) => `<select id="${id}"><option value="">미정</option><option value="D" ${v === 'D' ? 'selected' : ''}>민주</option><option value="R" ${v === 'R' ? 'selected' : ''}>공화</option></select>`;
   const lockVal = c.locked === true ? 'on' : c.locked === false ? 'off' : 'auto';
   const names = Object.keys(S.data.picks);
@@ -675,6 +794,16 @@ function adminHtml() {
       <label class="field">찍기 마감<select id="rLock"><option value="auto" ${lockVal === 'auto' ? 'selected' : ''}>자동 (11/4 08:00)</option><option value="on" ${lockVal === 'on' ? 'selected' : ''}>지금 마감</option><option value="off" ${lockVal === 'off' ? 'selected' : ''}>계속 열기</option></select></label>
     </div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="rSave">결과·설정 저장</button><span class="status" id="rMsg"></span></div>
+    <h3 style="margin-top:6px">개표 현황 입력 <span class="muted small" style="font-weight:400">언론이 승자를 확정한 선거 수</span></h3>
+    <div class="grid4">
+      <label class="field">하원 민주 확정<input id="lHD" type="number" inputmode="numeric" min="0" max="435" value="${lv.houseD ?? ''}"></label>
+      <label class="field">하원 공화 확정<input id="lHR" type="number" inputmode="numeric" min="0" max="435" value="${lv.houseR ?? ''}"></label>
+      <label class="field">상원 민주 승 (35곳 중)<input id="lSD" type="number" inputmode="numeric" min="0" max="35" value="${lv.senateD ?? ''}"></label>
+      <label class="field">상원 공화 승 (35곳 중)<input id="lSR" type="number" inputmode="numeric" min="0" max="35" value="${lv.senateR ?? ''}"></label>
+    </div>
+    <label class="field">속보 한 줄<input id="lNote" type="text" maxlength="60" placeholder="예: AP, 텍사스 민주 탈라리코 승리 확정" value="${esc(lv.note || '')}"></label>
+    <div class="grid4">${RACES.map(r => `<label class="field">${r.st}<select id="lc_${r.slug}"><option value="">미정</option><option value="D" ${calls[r.slug] === 'D' ? 'selected' : ''}>민주 승</option><option value="R" ${calls[r.slug] === 'R' ? 'selected' : ''}>공화 승</option></select></label>`).join('')}</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="lSave">개표 현황 저장</button><span class="status" id="lMsg"></span></div>
     ${names.length ? `<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap"><label class="field" style="flex:1;min-width:140px">잘못 들어간 이름 지우기<select id="rDel">${names.map(nm => `<option>${esc(nm)}</option>`).join('')}</select></label><button class="btn ghost" id="rDelBtn">지우기</button></div>` : ''}
     <p class="small muted">공식 결과는 AP 등 언론의 다수당 확정 발표를 기준으로 입력하세요. 상원 50:50이면 부통령이 공화당이라 공화 다수예요.</p>
   </div>`;
@@ -690,8 +819,16 @@ function bindAdmin(el) {
       locked: lock === 'on' ? true : lock === 'off' ? false : null,
     };
     m().textContent = '저장하는 중…'; m().className = 'status';
-    try { await commit(d => { d.config = conf; }, 'config: result/settings'); render(); }
+    try { await commit(d => { d.config = { ...d.config, ...conf }; }, 'config: result/settings'); render(); }
     catch (e) { m().textContent = '저장하지 못했어요.'; m().className = 'status err'; }
+  };
+  el.querySelector('#lSave').onclick = async () => {
+    const num = v => { const n = parseInt(v, 10); return Number.isFinite(n) && n >= 0 ? n : 0; };
+    const calls = {}; RACES.forEach(r => { const v = el.querySelector('#lc_' + r.slug).value; if (v) calls[r.slug] = v; });
+    const live = { houseD: num(el.querySelector('#lHD').value), houseR: num(el.querySelector('#lHR').value), senateD: num(el.querySelector('#lSD').value), senateR: num(el.querySelector('#lSR').value), note: el.querySelector('#lNote').value.slice(0, 60), calls, at: Date.now() };
+    const lm = el.querySelector('#lMsg'); lm.textContent = '저장하는 중…'; lm.className = 'status';
+    try { await commit(d => { d.config.live = live; }, 'live: seat update'); render(); }
+    catch (e) { lm.textContent = '저장하지 못했어요.'; lm.className = 'status err'; }
   };
   const del = el.querySelector('#rDelBtn');
   if (del) {
@@ -707,12 +844,14 @@ function bindAdmin(el) {
 function render() {
   renderClock();
   const a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
-  renderMine(); renderBoard();
+  renderMine(); renderBoard(); renderLive(); renderRaces();
   if (id) { const n = document.getElementById(id); if (n) { n.focus(); try { if (pos != null) n.setSelectionRange(pos, pos); } catch (e) {} } }
 }
 
 render();
 load();
+loadMarkets();
+setInterval(() => { if (!document.hidden) loadMarkets(); }, 60000);
 setInterval(() => { const a = document.activeElement; if (!S.saving && !document.hidden && !(a && (a.tagName === 'INPUT' || a.tagName === 'SELECT'))) load(); }, 30000);
 setInterval(renderClock, 30000);
 </script>
