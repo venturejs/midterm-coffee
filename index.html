@@ -4,511 +4,360 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>중간선거 커피내기</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Nunito:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nunito:wght@700;800&display=swap">
 <style>
-/* Layout: 위 상황판(투표 일정·마감) → 내 예측 + 사무실 집계 2단 → 판세 근거 → 섹터 시나리오 → 출처. 정당색(파랑·빨강)은 정보로만 쓰고, 페이지 강조는 커피색 하나 */
+/* 포털형 레이아웃: 흰 바탕, 얇은 회색 구분선, 초록 포인트 하나. 모듈 제목 + 본문의 반복 */
 :root {
-  /* 하얀 종이 + 파스텔 세 가지(분홍·하늘·버터) + 부드러운 갈색 선. 금융 페이지답게 장식은 최소, 모서리와 색으로만 귀여움 */
-  --bg: #fffdfb;
+  --bg: #f5f6f7;
   --surface: #ffffff;
-  --sunk: #fbf5f1;
-  --fg: #4a3f3a;
-  --muted: #9a8c85;
-  --line: #efe4dd;
-  --accent: #e8899a;
-  --accent-soft: #fdeef0;
-  --sky: #dcecf9;
-  --butter: #fdf3d3;
-  --dem: #5d8fd8;
-  --dem-soft: #e6effb;
-  --rep: #e47c7c;
-  --rep-soft: #fcebea;
-  --ok: #5fae84;
-  --display: "Jua", "Gowun Dodum", "Apple SD Gothic Neo", sans-serif;
-  --body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --mono: "Nunito", "Gowun Dodum", ui-rounded, sans-serif;
+  --sunk: #f7f8fa;
+  --fg: #1e1e23;
+  --sub: #555a64;
+  --muted: #8e939c;
+  --line: #e4e8eb;
+  --green: #03c75a;
+  --green-soft: #e9faf0;
+  --dem: #3d7be0;
+  --dem-soft: #eaf2fd;
+  --rep: #e5484d;
+  --rep-soft: #fdeced;
+  --gold: #fff6d6;
+  --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --num: "Nunito", "Noto Sans KR", system-ui, sans-serif;
   color-scheme: light;
 }
-
 * { box-sizing: border-box; }
+html, body { margin: 0; }
 body {
-  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
-  padding-block: 24px 48px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -.02em;
+  padding-block: 0 56px;
 }
-.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
-h1, h2, h3 { margin: 0; text-wrap: balance; }
-h2 { font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.2; }
-h3 { font-size: 15px; font-weight: 600; }
-p { margin: 0; }
-.num { font-variant-numeric: tabular-nums; }
-.muted { color: var(--muted); }
-.small { font-size: 13px; }
-.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; color: var(--accent); }
-a { color: inherit; text-underline-offset: 3px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 18px; }
+h1, h2, h3, p { margin: 0; }
+.num { font-family: var(--num); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+a { color: inherit; }
+[hidden] { display: none !important; }
 
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.section { display: flex; flex-direction: column; gap: 12px; }
-.section > header { display: flex; flex-direction: column; gap: 4px; }
+/* 머리 */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
+.masthead .wrap { flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 22px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand i { width: 14px; height: 14px; border-radius: 4px; background: var(--green); flex: none; }
+.brand h1 { font-size: 34px; font-weight: 900; letter-spacing: -.04em; }
+.brand h1 span { color: var(--green); }
+.clock { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+.clock b { font-family: var(--num); font-size: 28px; font-weight: 800; letter-spacing: 0; }
+.clock span { font-size: 16px; color: var(--sub); font-weight: 500; }
+.clock span em { font-style: normal; color: var(--green); font-weight: 700; }
 
-/* 상단 */
-.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
-.top h1 { font-family: var(--display); font-weight: 400; font-size: 44px; line-height: 1.05; }
-.top h1 span { color: var(--accent); }
-.top p { color: var(--muted); max-width: 60ch; }
-.clock { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; }
-.clock b { font-family: var(--mono); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
-.clock span { font-size: 13px; color: var(--muted); }
-
-.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
-.tl { padding: 12px 14px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; position: relative; }
+.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.tl { padding: 14px 16px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
 .tl:first-child { border-left: 0; }
-.tl b { font-family: var(--mono); font-weight: 500; font-size: 14px; font-variant-numeric: tabular-nums; }
-.tl span { font-size: 13px; color: var(--muted); line-height: 1.4; }
-.tl.past { background: var(--sunk); }
+.tl b { font-family: var(--num); font-size: 17px; font-weight: 800; letter-spacing: 0; }
+.tl span { font-size: 15px; color: var(--sub); line-height: 1.4; }
 .tl.past b, .tl.past span { color: var(--muted); }
-.tl.now { box-shadow: inset 0 3px 0 var(--accent); }
-.tl.key b { color: var(--accent); }
+.tl.now { background: var(--green-soft); box-shadow: inset 0 3px 0 var(--green); }
+.tl.key b { color: var(--green); }
 
-/* 숫자 요약 */
-.odds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.chamber { display: flex; flex-direction: column; gap: 12px; }
-.chamber .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.chamber .head h3 { font-family: var(--display); font-weight: 400; font-size: 24px; }
-.chamber .head span { font-size: 13px; color: var(--muted); }
-.meter { display: flex; flex-direction: column; gap: 6px; }
-.meter-row { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 13px; }
-.bar { height: 22px; border-radius: 6px; overflow: hidden; display: flex; background: var(--sunk); }
-.bar i { display: flex; align-items: center; font-style: normal; font-size: 12px; font-weight: 600; color: #fff; padding: 0 8px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.bar .d { background: var(--dem); }
-.bar .r { background: var(--rep); justify-content: flex-end; }
-.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.fact { background: var(--sunk); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
-.facts4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.fact b { font-size: 18px; font-variant-numeric: tabular-nums; }
-.fact span { font-size: 12px; color: var(--muted); line-height: 1.4; }
-
-/* 참여 */
-.play { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 14px; align-items: start; }
-.pick-q { display: flex; flex-direction: column; gap: 8px; }
-.pick-q label.q { font-weight: 600; font-size: 14px; }
-.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.choice button {
-  font: inherit; font-weight: 600; font-size: 15px; padding: 12px; border-radius: 10px; cursor: pointer;
-  border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); display: flex; flex-direction: column; align-items: center; gap: 0;
-}
-.choice button small { font-weight: 400; font-size: 12px; color: var(--muted); }
-.choice button.d[aria-pressed="true"] { border-color: var(--dem); background: var(--dem-soft); color: var(--dem); }
-.choice button.r[aria-pressed="true"] { border-color: var(--rep); background: var(--rep-soft); color: var(--rep); }
-.choice button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.choice button:disabled { cursor: not-allowed; opacity: .6; }
-.seats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
-.field input, .field select, .field textarea {
-  font: inherit; font-size: 15px; color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%;
-  font-variant-numeric: tabular-nums;
-}
-.btn { font: inherit; font-weight: 600; font-size: 15px; border-radius: 10px; padding: 11px 18px; cursor: pointer; border: 1.5px solid var(--fg); background: var(--fg); color: var(--surface); }
-.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
-.btn:disabled { opacity: .45; cursor: not-allowed; }
-.status { font-size: 13px; min-height: 1.4em; }
-.status.ok { color: var(--ok); }
-.status.err { color: var(--rep); }
-.notice { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; }
-.rule { display: flex; gap: 10px; align-items: center; background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
-.rule b { color: var(--accent); }
-
-.tally { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.tally .t { background: var(--sunk); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
-.tally .t span { font-size: 12px; color: var(--muted); }
-.tally .bar { height: 26px; }
-
-.board { width: 100%; border-collapse: collapse; font-size: 14px; }
-.board-wrap { overflow-x: auto; }
-.board th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.board td { padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-.board tr.me td { background: var(--accent-soft); }
-.board .who { display: flex; align-items: center; gap: 8px; min-width: 120px; }
-.board .who img { width: 24px; height: 24px; border-radius: 50%; flex: none; max-width: none; }
-.board .memo { color: var(--muted); font-size: 13px; max-width: 220px; }
-.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
-.pill.d { background: var(--dem-soft); color: var(--dem); }
-.pill.r { background: var(--rep-soft); color: var(--rep); }
-.pill.hit { box-shadow: 0 0 0 1.5px currentColor; }
-.pill.miss { opacity: .35; text-decoration: line-through; }
-.rank { font-family: var(--mono); font-weight: 500; }
-.coffee { color: var(--accent); font-weight: 700; white-space: nowrap; }
-.empty { color: var(--muted); font-size: 14px; padding: 18px 0; text-align: center; }
-
-.admin { border: 1.5px dashed var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-.admin .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+/* 모듈 */
+.module { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.mod-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.mod-head h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.mod-head .meta { font-size: 15px; color: var(--muted); }
+.mod-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.live-badge { font-family: var(--num); font-size: 13px; font-weight: 800; color: #fff; background: var(--rep); border-radius: 4px; padding: 2px 7px; letter-spacing: .04em; }
+.live-badge.idle { background: var(--muted); }
 
 /* 개표 상황판 */
-.live-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.live-card { gap: 12px; }
-.live-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
-.live-top h3 { font-family: var(--display); font-weight: 400; font-size: 24px; }
-.prob { display: flex; align-items: baseline; gap: 8px; }
-.prob b { font-family: var(--mono); font-weight: 500; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
-.prob .lbl { font-size: 13px; color: var(--muted); }
-.chg { font-size: 12px; font-variant-numeric: tabular-nums; }
+.headline { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--gold); border-radius: 10px; padding: 12px 16px; font-size: 17px; font-weight: 700; }
+.headline .links { display: flex; gap: 8px; flex-wrap: wrap; }
+.headline .links a { font-size: 15px; font-weight: 500; text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+.headline .links a:hover { border-color: var(--green); color: var(--green); }
+.chambers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.chamber { border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.chamber .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.chamber h3 { font-size: 22px; font-weight: 700; }
+.chamber .prob { display: flex; align-items: baseline; gap: 8px; }
+.chamber .prob small { font-size: 15px; color: var(--sub); }
+.chamber .prob b { font-family: var(--num); font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: 0; color: var(--dem); }
+.chg { font-family: var(--num); font-size: 15px; font-weight: 700; }
 .chg.up { color: var(--dem); } .chg.dn { color: var(--rep); }
-.seatbar { position: relative; height: 30px; border-radius: 8px; overflow: hidden; display: flex; background: var(--sunk); }
-.seatbar i { display: flex; align-items: center; font-style: normal; font-size: 12px; font-weight: 700; color: #fff; padding: 0 8px; white-space: nowrap; font-variant-numeric: tabular-nums; transition: width .6s; }
-.seatbar .d { background: var(--dem); }
-.seatbar .r { background: var(--rep); margin-left: auto; justify-content: flex-end; }
-.seatbar .maj { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--fg); }
-.seatleg { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; gap: 8px; flex-wrap: wrap; }
-.headline { display: flex; gap: 10px; align-items: flex-start; }
-.headline .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rep); margin-top: 6px; flex: none; animation: pulse 1.6s infinite; }
-@keyframes pulse { 50% { opacity: .25; } }
-.live-links { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; }
-.live-links a { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; text-decoration: none; background: var(--surface); }
-.oddsbar { display: flex; height: 20px; border-radius: 5px; overflow: hidden; min-width: 140px; background: var(--sunk); }
-.oddsbar i { font-style: normal; font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; padding: 0 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--sunk); }
+.bar i { display: block; }
+.bar .d { background: var(--dem); } .bar .r { background: var(--rep); margin-left: auto; }
+.seatline { font-size: 16px; font-weight: 500; }
+.seatbar { position: relative; display: flex; height: 34px; border-radius: 8px; overflow: hidden; background: var(--sunk); }
+.seatbar i { display: flex; align-items: center; font-style: normal; font-family: var(--num); font-size: 15px; font-weight: 800; color: #fff; padding: 0 10px; white-space: nowrap; letter-spacing: 0; transition: width .6s; }
+.seatbar .d { background: var(--dem); } .seatbar .r { background: var(--rep); margin-left: auto; justify-content: flex-end; }
+.seatbar .maj { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--fg); }
+.seatleg { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); gap: 8px; }
+
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 16px; }
+th { text-align: left; font-size: 15px; font-weight: 500; color: var(--muted); padding: 10px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--sunk); }
+td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+.races td:first-child { font-weight: 700; white-space: nowrap; }
+.oddsbar { display: flex; height: 24px; border-radius: 6px; overflow: hidden; min-width: 170px; background: var(--sunk); }
+.oddsbar i { font-style: normal; font-family: var(--num); font-size: 14px; font-weight: 800; color: #fff; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; letter-spacing: 0; }
 .oddsbar .d { background: var(--dem); } .oddsbar .r { background: var(--rep); justify-content: flex-end; margin-left: auto; }
-.called { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 5px; margin-left: 6px; white-space: nowrap; }
-.called.d { background: var(--dem); color: #fff; } .called.r { background: var(--rep); color: #fff; }
-@media (max-width: 880px) { .live-grid { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .headline .dot { animation: none; } .seatbar i { transition: none; } }
+.cand { font-size: 15px; color: var(--sub); white-space: nowrap; }
+.tag { display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; white-space: nowrap; }
+.tag.d { background: var(--dem); color: #fff; } .tag.r { background: var(--rep); color: #fff; }
+.seat-now { font-size: 15px; color: var(--sub); }
 
-/* 판세 근거 */
-.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.case { border-top: 4px solid var(--line); }
-.case.d { border-top-color: var(--dem); }
-.case.r { border-top-color: var(--rep); }
-.case h3 { font-size: 16px; }
-.case.d h3 { color: var(--dem); }
-.case.r h3 { color: var(--rep); }
-.case ul, .kr ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
-.case li, .kr li { line-height: 1.5; }
+/* 찍기 · 집계 */
+.play { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 18px; align-items: start; }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.q { font-size: 17px; font-weight: 700; margin-bottom: 8px; display: block; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice button { font: inherit; font-size: 18px; font-weight: 700; padding: 14px; border-radius: 10px; cursor: pointer; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); }
+.choice button.d[aria-pressed="true"] { border-color: var(--dem); background: var(--dem-soft); color: var(--dem); }
+.choice button.r[aria-pressed="true"] { border-color: var(--rep); background: var(--rep-soft); color: var(--rep); }
+.choice button:disabled { cursor: not-allowed; opacity: .6; }
+input[type=text], input[type=number], select { font: inherit; font-size: 17px; color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 13px; width: 100%; }
+input:focus, select:focus { outline: none; border-color: var(--green); }
+.btn { font: inherit; font-size: 18px; font-weight: 700; border-radius: 10px; padding: 14px 20px; cursor: pointer; border: 0; background: var(--green); color: #fff; }
+.btn.line { background: var(--surface); color: var(--fg); border: 1.5px solid var(--line); font-size: 16px; padding: 10px 16px; }
+.btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.status { font-size: 16px; min-height: 1.4em; font-weight: 500; }
+.status.ok { color: var(--green); } .status.err { color: var(--rep); }
+.notice { background: var(--sunk); border-radius: 10px; padding: 14px 16px; font-size: 16px; }
 
-.races { width: 100%; border-collapse: collapse; font-size: 14px; }
-.races th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); }
-.races td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-.races td:first-child { font-weight: 600; white-space: nowrap; }
-.lean { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; white-space: nowrap; display: inline-block; }
-.lean.d { background: var(--dem-soft); color: var(--dem); }
-.lean.r { background: var(--rep-soft); color: var(--rep); }
-.lean.t { background: var(--sunk); color: var(--fg); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat { background: var(--sunk); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.stat h3 { font-size: 17px; font-weight: 700; }
+.split { display: flex; justify-content: space-between; align-items: baseline; }
+.split b { font-family: var(--num); font-size: 30px; font-weight: 800; letter-spacing: 0; line-height: 1; }
+.split b small { font-size: 16px; font-weight: 700; margin-left: 2px; }
+.split .d { color: var(--dem); } .split .r { color: var(--rep); }
+.split span { font-size: 15px; color: var(--sub); }
+.combo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.combo div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+.combo span { font-size: 14px; color: var(--sub); }
+.combo b { font-family: var(--num); font-size: 22px; font-weight: 800; letter-spacing: 0; }
+.pill { display: inline-block; font-size: 14px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.d { background: var(--dem-soft); color: var(--dem); } .pill.r { background: var(--rep-soft); color: var(--rep); }
+.board tr.me td { background: var(--green-soft); }
+.board .memo { color: var(--sub); }
+.empty { text-align: center; color: var(--muted); padding: 24px 0; font-size: 16px; }
 
-.kr { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.admin { border-top: 1px dashed var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+.admin h3 { font-size: 18px; font-weight: 700; }
+.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: var(--sub); }
 
-/* 섹터 */
-.sectors { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
-.sectors th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); }
-.sectors td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
-.sectors td:first-child { min-width: 150px; }
-.scn { display: flex; flex-direction: column; gap: 4px; }
-.scn b { font-size: 15px; }
-.scn .p { font-size: 12px; color: var(--muted); }
-.swatch { display: inline-flex; gap: 3px; }
-.swatch i { width: 14px; height: 8px; border-radius: 2px; display: inline-block; }
-.up { color: var(--ok); font-weight: 600; }
-.down { color: var(--rep); font-weight: 600; }
-
-.sources { columns: 2; column-gap: 24px; font-size: 13px; color: var(--muted); padding-left: 18px; margin: 0; }
-.sources li { break-inside: avoid; margin-bottom: 4px; }
-.disclaimer { font-size: 12.5px; color: var(--muted); }
+/* 펼침 정보 */
+.info { display: flex; flex-direction: column; gap: 10px; }
+details.acc { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+details.acc summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; font-size: 20px; font-weight: 700; }
+details.acc summary::-webkit-details-marker { display: none; }
+details.acc summary::after { content: ""; width: 10px; height: 10px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .2s; margin-right: 4px; flex: none; }
+details.acc[open] summary::after { transform: rotate(-135deg); }
+details.acc[open] summary { border-bottom: 1px solid var(--line); color: var(--green); }
+details.acc .acc-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.side { border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.side.d { background: var(--dem-soft); } .side.r { background: var(--rep-soft); } .side.n { background: var(--sunk); }
+.side h3 { font-size: 18px; font-weight: 700; }
+.side.d h3 { color: var(--dem); } .side.r h3 { color: var(--rep); }
+.side ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.side li b { font-weight: 700; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.kpi { background: var(--sunk); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.kpi span { font-size: 15px; color: var(--sub); }
+.kpi b { font-family: var(--num); font-size: 26px; font-weight: 800; letter-spacing: 0; }
+.kpi b.d { color: var(--dem); }
+.sectors td { vertical-align: top; line-height: 1.55; }
+.sectors td:first-child { font-weight: 700; white-space: nowrap; }
+.up { color: var(--green); font-weight: 700; } .down { color: var(--rep); font-weight: 700; }
+.sources { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 16px; }
 
 @media (max-width: 880px) {
-  .play, .odds, .cases, .kr { grid-template-columns: 1fr; }
+  .chambers, .play, .two, .stats { grid-template-columns: 1fr; }
   .timeline { grid-template-columns: 1fr 1fr; }
   .tl { border-left: 0; border-top: 1px solid var(--line); }
   .tl:nth-child(-n+2) { border-top: 0; }
   .tl:nth-child(even) { border-left: 1px solid var(--line); }
-  .sources { columns: 1; }
+  .kpis { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 520px) {
-  .top h1 { font-size: 34px; }
-  .clock { align-items: flex-start; text-align: left; }
-  .facts, .facts4 { grid-template-columns: 1fr 1fr; }
-  .meter-row { grid-template-columns: 84px minmax(0, 1fr); }
-  .admin .grid4 { grid-template-columns: 1fr 1fr; }
-  .panel { padding: 16px; }
+  body { font-size: 16px; }
+  .brand h1 { font-size: 28px; }
+  .clock { text-align: left; }
+  .clock b { font-size: 24px; }
+  .mod-body, details.acc .acc-body { padding: 16px; }
+  .grid4 { grid-template-columns: 1fr 1fr; }
+  .combo { grid-template-columns: 1fr 1fr; }
+  .chamber .prob b { font-size: 34px; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-
-/* ── 부드러운 파스텔 테마 ── */
-body { letter-spacing: -.01em; }
-.panel { border: 1.5px solid var(--line); border-radius: 22px; box-shadow: 0 2px 0 var(--line); }
-.top h1 { font-size: 46px; letter-spacing: -.02em; }
-.top h1 span { color: var(--accent); }
-h2 { font-size: 27px; }
-.eyebrow { color: var(--accent); letter-spacing: .04em; font-weight: 400; display: inline-flex; align-items: center; gap: 6px; }
-.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: .7; }
-.clock b { font-weight: 800; font-size: 28px; color: var(--fg); }
-.timeline { border: 1.5px solid var(--line); border-radius: 22px; }
-.tl.past { background: var(--sunk); }
-.tl.now { box-shadow: inset 0 4px 0 var(--accent); background: var(--accent-soft); }
-.tl b { font-weight: 800; }
-.tl.key b { color: var(--accent); }
-.bar, .seatbar, .oddsbar { border-radius: 999px; }
-.bar i, .seatbar i, .oddsbar i { font-family: var(--mono); font-weight: 800; }
-.fact { background: var(--sunk); border-radius: 16px; }
-.fact b { font-family: var(--mono); font-weight: 800; color: var(--fg); }
-.facts4 .fact:nth-child(1) { background: var(--sky); }
-.facts4 .fact:nth-child(2) { background: var(--butter); }
-.facts4 .fact:nth-child(3) { background: var(--accent-soft); }
-.choice button { border-radius: 16px; border-width: 1.5px; }
-.choice button.d[aria-pressed="true"] { background: var(--dem-soft); }
-.choice button.r[aria-pressed="true"] { background: var(--rep-soft); }
-.field input, .field select, .field textarea { border-radius: 14px; background: var(--surface); }
-.btn { border-radius: 999px; background: var(--fg); border-color: var(--fg); font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .01em; }
-.btn.ghost { background: var(--surface); color: var(--fg); border-color: var(--line); }
-.rule { background: var(--butter); border-radius: 16px; }
-.rule b { color: var(--fg); }
-.notice { background: var(--sky); border-radius: 16px; }
-.tally .t { background: var(--sunk); border-radius: 16px; }
-.pill { border-radius: 999px; }
-.board tr.me td { background: var(--accent-soft); }
-.board tr.me td:first-child { border-radius: 12px 0 0 12px; } .board tr.me td:last-child { border-radius: 0 12px 12px 0; }
-.coffee { color: #b9786a; }
-.admin { border-radius: 18px; border-color: var(--line); background: var(--sunk); }
-.case { border-top-width: 6px; }
-.case.d { border-top-color: var(--dem-soft); } .case.r { border-top-color: var(--rep-soft); }
-.case.d h3 { color: var(--dem); } .case.r h3 { color: var(--rep); }
-.lean, .called { border-radius: 999px; }
-.live-links a { border-radius: 999px; border: 1.5px solid var(--line); }
-.live-links a:hover { background: var(--accent-soft); }
-.prob b { font-weight: 800; }
-.headline .dot { background: var(--accent); }
-.sectors th, .races th, .board th { font-weight: 400; }
-#live-sec .live-card:first-child { background: linear-gradient(180deg, var(--dem-soft), var(--surface) 55%); }
-#live-sec .live-card:last-child { background: linear-gradient(180deg, var(--accent-soft), var(--surface) 55%); }
-#liveHead { background: var(--butter); border-color: #f3e6bd; }
-.sources { color: var(--muted); }
-a { text-decoration-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .seatbar i, details.acc summary::after { transition: none; } }
 </style>
-<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
 <body>
 
-<div class="wrap">
-
-  <div class="top">
-    <div style="display:flex;flex-direction:column;gap:6px">
-      <span class="eyebrow">2026 미국 중간선거 · 사무실 예측 게임</span>
-      <h1>중간선거 <span>커피내기</span></h1>
-      <p>하원·상원 다수당을 누가 가져갈지 찍어 보세요. 판단에 참고할 판세와 미국·한국 시각, 결과별 수혜 섹터를 아래에 정리했어요.</p>
-    </div>
-    <div class="clock">
-      <b id="kst">--:--</b>
-      <span id="phase">한국 시각</span>
-    </div>
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand"><i></i><h1>중간선거 <span>커피내기</span></h1></div>
+    <div class="clock"><b id="kst">--:--</b><span id="phase"></span></div>
   </div>
+</header>
+
+<div class="wrap" style="padding-top:18px">
 
   <div class="timeline" id="timeline"></div>
 
   <!-- 개표 상황판 -->
-  <section class="section" id="live-sec">
-    <header>
-      <span class="eyebrow">개표 상황판 · 실시간</span>
-      <h2>지금 어디까지 왔나</h2>
-      <p class="muted small">위쪽 확률은 미국 예측시장 Polymarket의 가격 데이터로 1분마다 자동 갱신돼요(사이트는 국내 접속 차단이라 링크는 넣지 않았어요). 개표가 진행되면 결과가 굳어지는 쪽으로 빠르게 움직여요. 확정 의석은 진행자가 언론 발표를 보고 입력해요.</p>
-    </header>
-    <div class="panel" id="liveHead"></div>
-    <div class="live-grid">
-      <div class="panel live-card" id="liveHouse"></div>
-      <div class="panel live-card" id="liveSenate"></div>
+  <section class="module">
+    <div class="mod-head">
+      <h2>개표 상황판 <span class="live-badge" id="liveBadge">LIVE</span></h2>
+      <span class="meta" id="liveMeta"></span>
     </div>
-  </section>
-
-  <!-- 참여 -->
-  <section class="section" id="play-sec">
-    <header>
-      <span class="eyebrow">찍기</span>
-      <h2>내 예측과 사무실 집계</h2>
-    </header>
-    <div class="play">
-      <div class="panel" id="mine"></div>
-      <div class="panel" id="boardPanel"></div>
-    </div>
-  </section>
-
-  <!-- 숫자 판세 -->
-  <section class="section">
-    <header>
-      <span class="eyebrow">판세 한눈에 · 11월 1~2일 기준</span>
-      <h2>예측시장과 예측기관은 이렇게 봐요</h2>
-      <p class="muted small">확률은 '이길 가능성'이지 득표율이 아니에요. 70%라도 10번 중 3번은 반대로 나와요.</p>
-    </header>
-    <div class="odds">
-      <div class="panel chamber">
-        <div class="head"><h3>하원 435석</h3><span>과반 218석 · 현재 공화당 근소 다수</span></div>
-        <div class="meter">
-          <div class="meter-row"><span>Polymarket</span><div class="bar"><i class="d" style="width:95%">민주 95%</i><i class="r" style="width:5%"></i></div></div>
-          <div class="meter-row"><span>Kalshi</span><div class="bar"><i class="d" style="width:93.3%">민주 93%</i><i class="r" style="width:6.7%"></i></div></div>
-          <div class="meter-row"><span>Decision Desk HQ</span><div class="bar"><i class="d" style="width:83%">민주 83%</i><i class="r" style="width:17%">17%</i></div></div>
-        </div>
-        <div class="facts">
-          <div class="fact"><b>220석</b><span>쿡 리포트: 민주 우세 쪽으로 분류된 의석 (경합 17석)</span></div>
-          <div class="fact"><b>225석</b><span>사바토 크리스털볼: 민주 우세 쪽 의석</span></div>
-          <div class="fact"><b>최대 240석</b><span>쿡 리포트가 본 민주당의 좋은 밤 시나리오</span></div>
-        </div>
+    <div class="mod-body">
+      <div class="headline" id="headline"></div>
+      <div class="chambers">
+        <div class="chamber" id="liveHouse"></div>
+        <div class="chamber" id="liveSenate"></div>
       </div>
-      <div class="panel chamber">
-        <div class="head"><h3>상원 100석</h3><span>현재 공화 53 : 민주 47 · 동수면 부통령(공화)이 결정</span></div>
-        <div class="meter">
-          <div class="meter-row"><span>Polymarket</span><div class="bar"><i class="d" style="width:72%">민주 72%</i><i class="r" style="width:28%">28%</i></div></div>
-          <div class="meter-row"><span>Kalshi</span><div class="bar"><i class="d" style="width:71%">민주 71%</i><i class="r" style="width:29%">29%</i></div></div>
-          <div class="meter-row"><span>Decision Desk HQ</span><div class="bar"><i class="d" style="width:63%">민주 63%</i><i class="r" style="width:37%">37%</i></div></div>
-        </div>
-        <div class="facts">
-          <div class="fact"><b>순증 4석</b><span>민주당이 51석 과반을 만들려면 공화 의석 4개를 뺏고 기존 의석도 지켜야 해요</span></div>
-          <div class="fact"><b>경합 7곳 중 4곳</b><span>쿡 리포트 기준 민주당이 가져와야 하는 경합 수</span></div>
-          <div class="fact"><b>오차범위</b><span>경향신문: 7대 격전지 모두 오차범위 안 초접전</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="facts facts4" id="extraFacts">
-      <div class="fact"><b>민주 +8.6%p</b><span>전국 정당 지지 여론조사 평균 (51.7 : 43.1, 11/2)</span></div>
-      <div class="fact"><b>5,300만 명+</b><span>사전투표자. 2022년 4,600만 명보다 많아요. 민주 지지자 43%, 공화 31%, 무당층 25%</span></div>
-      <div class="fact"><b>71 · 24 · 5%</b><span>Polymarket 조합: 민주 양원 · 하원 민주+상원 공화 · 공화 양원</span></div>
-      <div class="fact"><b>63 · 28 · 8%</b><span>대신증권이 본 같은 세 시나리오 확률</span></div>
-    </div>
-  </section>
-
-  <!-- 양쪽 근거 -->
-  <section class="section">
-    <header>
-      <span class="eyebrow">판단 근거</span>
-      <h2>양쪽 논리를 다 보고 찍으세요</h2>
-      <p class="muted small">각 진영과 분석가들이 내세우는 근거를 모았어요. 어느 쪽이 맞다는 판단은 하지 않았어요.</p>
-    </header>
-    <div class="cases">
-      <div class="panel case d">
-        <h3>민주당이 이긴다고 보는 근거</h3>
-        <ul>
-          <li><b>집권당 중간선거 징크스.</b> 대통령 소속 정당은 중간선거에서 하원 의석을 잃는 경우가 대부분이에요.</li>
-          <li><b>경제 불만.</b> 관세와 물가, 이란 전쟁 여파로 오른 난방유·연료·비료 가격이 공화당에 부담으로 꼽혀요.</li>
-          <li><b>큰 여론조사 격차.</b> 전국 정당 지지가 민주 +8.6%p로 2017년 이후 가장 큰 수준이에요. Economist/YouGov는 투표 의향층에서 민주 +11%p.</li>
-          <li><b>사전투표 열기.</b> 5,300만 명을 넘었고 민주 지지자 비중이 더 높아요.</li>
-          <li><b>공화 텃밭 균열.</b> 메인·텍사스·오하이오에서 민주 후보가 앞서고, 1932년 이후 민주 상원의원이 없던 캔자스도 접전이에요.</li>
-          <li><b>예측시장 흐름.</b> Kalshi 상원 민주 확률이 3월 44% → 9월 57% → 11월 71%로 꾸준히 올랐어요.</li>
-        </ul>
-      </div>
-      <div class="panel case r">
-        <h3>공화당이 지킨다고 보는 근거</h3>
-        <ul>
-          <li><b>상원 지도가 공화에 유리.</b> 민주당은 기존 의석을 다 지키면서 공화 우세 지역에서 4곳을 더 이겨야 해요. 하나만 놓쳐도 과반이 안 돼요.</li>
-          <li><b>격전지 전부 오차범위.</b> 7곳 모두 초접전이라 여론조사가 조금만 빗나가도 결과가 뒤집혀요.</li>
-          <li><b>여론조사 오차의 전례.</b> 대신증권은 여론조사가 공화 표를 과소평가할 경우 상원이 사실상 반반이 될 수 있다고 경고했어요.</li>
-          <li><b>민주당 내분.</b> 미시간에서 경선에 진 스티븐스 의원이 공화 로저스 후보를 공개 지지했어요. 민주가 지켜야 하는 유일한 경합 의석이에요.</li>
-          <li><b>버티는 지역.</b> 아이오와·사우스캐롤라이나는 예측시장에서 공화 우세로 남아 있어요.</li>
-          <li><b>좋은 밤 시나리오.</b> 폭스뉴스 분석은 공화가 상원을 최대 52석까지 지킬 수 있다고 봤고, 트럼프 대통령은 양원 모두 지킨다고 장담하며 28차례 지원 유세를 했어요.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>상원 승부처 8곳 <span class="muted small" style="font-weight:400" id="raceUpd"></span></h3>
-      <div class="board-wrap">
+      <div class="tbl-wrap">
         <table class="races">
-          <thead><tr><th>주</th><th>현재</th><th>후보 (민주 vs 공화)</th><th>실시간 승리 확률</th><th>포인트</th></tr></thead>
+          <thead><tr><th>상원 승부처</th><th>현재</th><th>후보 (민주 vs 공화)</th><th>승리 확률</th></tr></thead>
           <tbody id="raceRows"></tbody>
         </table>
       </div>
-      <p class="muted small">확률은 Polymarket 주별 상원 시장 가격이에요. 한쪽이 97%를 넘으면 사실상 결정된 것으로 표시해요. 민주당이 지켜야 하는 미네소타·뉴햄프셔는 민주 약우세로 분류돼요.</p>
     </div>
   </section>
 
-  <!-- 미국 vs 한국 시각 -->
-  <section class="section">
-    <header>
-      <span class="eyebrow">미국 · 한국 시각</span>
-      <h2>시장은 무엇을 보고 있나</h2>
-    </header>
-    <div class="kr">
-      <div class="panel">
-        <h3>미국 쪽 분석</h3>
-        <ul>
-          <li><b>업종 차별화가 핵심.</b> 월가는 이번 선거가 지수 전체보다 업종 간 희비를 키울 것으로 봐요.</li>
-          <li><b>분점 의회면 '큰 법안 없음'.</b> 찰스 슈왑은 대형 입법은 어렵고 의회 감시가 늘며, 예산 처리와 2027년 부채한도 협상이 시장 변수라고 봤어요.</li>
-          <li><b>민주 양원이면 감시 강화.</b> 행정부 견제, 인사 인준과 규제 정책을 둘러싼 대립이 커질 거라는 분석이에요.</li>
-          <li><b>선거 후 주가는 대체로 올랐어요.</b> 1974년 이후 중간선거 6개월 뒤 S&P500은 13번 모두 상승, 평균 +12.4%였어요(슈왑 집계).</li>
-        </ul>
-      </div>
-      <div class="panel">
-        <h3>한국 쪽 분석</h3>
-        <ul>
-          <li><b>"승부처는 상원."</b> 한국 언론은 하원 민주 탈환은 사실상 확실, 상원은 접전으로 보는 분위기예요.</li>
-          <li><b>코스피는 민주 쪽이 유리하다는 시각.</b> 대신증권은 민주 하원이 트럼프 재정 확장을 견제해 미국 금리와 달러가 안정될 수 있다고 봤어요. 4분기 코스피 상단 6,700.</li>
-          <li><b>공화 양원이면 금리·달러 상승 위험.</b> 같은 분석에서 미 10년물 금리 0.15~0.3%p 상승, 원·달러 1,360~1,400원, 코스피 하단 4,950까지 열어 뒀어요.</li>
-          <li><b>불확실성 해소가 더 중요.</b> 1950년 이후 중간선거 12개월 뒤 S&P500은 모두 올랐고(평균 +15.1%), 코스피는 9번 중 6번 올랐어요.</li>
-          <li><b>이미 움직인 종목.</b> 한국투자증권은 민주 상원 확률이 50%를 넘으면서 데이터센터 관련주가 약세를 보였다고 짚었어요.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  <!-- 찍기 · 집계 -->
+  <div class="play">
+    <section class="module">
+      <div class="mod-head"><h2>내 예측</h2><span class="meta" id="mineMeta"></span></div>
+      <div class="mod-body" id="mine"></div>
+    </section>
+    <section class="module">
+      <div class="mod-head"><h2>사무실 집계</h2><span class="meta" id="boardMeta"></span></div>
+      <div class="mod-body" id="board"></div>
+    </section>
+  </div>
 
-  <!-- 섹터 -->
-  <section class="section">
-    <header>
-      <span class="eyebrow">결과별 수혜 · 부담 섹터</span>
-      <h2>누가 이기면 어디가 움직이나</h2>
-      <p class="muted small">증권사·외신이 꼽은 내용을 시나리오별로 모았어요. 투자 권유가 아니라 참고용이에요.</p>
-    </header>
-    <div class="panel" style="padding:8px 12px">
-      <div class="board-wrap">
-        <table class="sectors">
-          <thead><tr><th>시나리오</th><th>미국 섹터</th><th>한국 섹터 · 종목 예시</th><th>왜</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><div class="scn"><span class="swatch"><i style="background:var(--dem)"></i><i style="background:var(--dem)"></i></span><b>민주 양원</b><span class="p">Polymarket 71% · 대신 63%</span></div></td>
-              <td><span class="up">▲</span> 병원·일부 건강보험, 태양광·풍력<br><span class="down">▼</span> AI 데이터센터, 금융, 암호화폐, 방산</td>
-              <td><span class="up">▲</span> 전력기기(HD현대일렉트릭, 효성중공업, LS일렉트릭), 헬스케어, 태양광·풍력, 증권·인터넷·2차전지<br><span class="down">▼</span> 데이터센터 관련주</td>
-              <td>오바마케어 보조금 복원·메디케이드 삭감 철회 기대, 재생에너지 세액공제 복원 논의, 데이터센터 전력·환경 규제 가능성. 빅테크 자체 변전소 수요로 초고압 전력기기는 기회</td>
-            </tr>
-            <tr>
-              <td><div class="scn"><span class="swatch"><i style="background:var(--dem)"></i><i style="background:var(--rep)"></i></span><b>하원 민주 · 상원 공화</b><span class="p">Polymarket 24% · 대신 28%</span></div></td>
-              <td>정책 급변 제한. 예산·부채한도 협상 때 변동성</td>
-              <td><span class="up">▲</span> ESS(에너지저장장치)</td>
-              <td>양당이 함께 지지하는 정책만 추진력. ESS 투자세액공제는 감세법 이후에도 유지 전망</td>
-            </tr>
-            <tr>
-              <td><div class="scn"><span class="swatch"><i style="background:var(--rep)"></i><i style="background:var(--rep)"></i></span><b>공화 양원</b><span class="p">Polymarket 5% · 대신 8%</span></div></td>
-              <td><span class="up">▲</span> 방산(JP모건: 록히드마틴, 노스롭그루먼, L3해리스), 금융·암호화폐(규제 완화)</td>
-              <td><span class="up">▲</span> 방산(한화오션 함정 MRO), 원전(두산에너빌리티 등 SMR), 보험<br><span class="down">▼</span> 금리·달러 상승 시 성장주 전반</td>
-              <td>국방예산 확대, 원전 규제 완화, 암호화폐 시장구조법(클래리티법) 진전 기대</td>
-            </tr>
-            <tr>
-              <td><div class="scn"><span class="swatch"><i style="background:var(--muted)"></i><i style="background:var(--muted)"></i></span><b>결과와 무관하게</b><span class="p">증권사 공통 의견</span></div></td>
-              <td>선거 불확실성 해소 자체가 호재라는 시각</td>
-              <td><span class="up">▲</span> 반도체, 조선, 바이오(대신) · 조선, 반도체, 은행, 헬스케어, 호텔·레저(신한)<br><span class="down">▼</span> 건설, 에너지, 비철금속(신한)</td>
-              <td>실적 개선이 정책 변화와 상관없이 이어질 업종 위주. 선거 후 이란 공습 재개 가능성은 위험 요인</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- 펼침 정보 -->
+  <div class="info">
+    <details class="acc">
+      <summary>판세 한눈에</summary>
+      <div class="acc-body">
+        <div class="kpis">
+          <div class="kpi"><span>하원 민주 승리 (예측시장)</span><b class="d">93~95%</b></div>
+          <div class="kpi"><span>상원 민주 승리 (예측시장)</span><b class="d">71~72%</b></div>
+          <div class="kpi"><span>전국 정당 지지 여론조사</span><b>민주 +8.6</b></div>
+          <div class="kpi"><span>사전투표</span><b>5,300만+</b></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>구분</th><th>하원 (과반 218석)</th><th>상원 (과반 51석)</th></tr></thead>
+            <tbody>
+              <tr><td>현재</td><td>공화 근소 다수</td><td>공화 53 : 민주 47</td></tr>
+              <tr><td>Decision Desk HQ</td><td>민주 83%</td><td>민주 63%</td></tr>
+              <tr><td>쿡 폴리티컬 리포트</td><td>민주 우세 220석, 경합 17석</td><td>경합 7곳 중 민주가 4곳 이겨야 과반</td></tr>
+              <tr><td>사바토 크리스털볼</td><td>민주 우세 225석</td><td>경합 5곳 중 민주가 2곳 이겨야 과반</td></tr>
+              <tr><td>결과 조합 (Polymarket)</td><td colspan="2">민주 양원 71% · 하원 민주+상원 공화 24% · 공화 양원 5%</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  </section>
+    </details>
 
-  <section class="section">
-    <header><span class="eyebrow">출처</span></header>
-    <ol class="sources">
-      <li><a href="https://news.kalshi.com/p/2026-midterm-predictions" target="_blank" rel="noopener">Kalshi News, 2026 Midterm Predictions (11/1)</a></li>
-      <li><a href="https://www.wionews.com/world/us-midterms-2026-prediction-markets-democrats-senate-house-1793558951403" target="_blank" rel="noopener">WION, 예측시장 상원 71%·하원 95% (11/2)</a></li>
-      <li><a href="https://uspollingdata.com/polls/generic-ballot/" target="_blank" rel="noopener">US Polling Data, Generic Ballot (11/2)</a></li>
-      <li><a href="https://www.foxnews.com/politics/everything-know-house-senate-control-ballot-measures-2026-election-day-poll-closing" target="_blank" rel="noopener">Fox News, House·Senate control and poll closings</a></li>
-      <li><a href="https://www.schwab.com/learn/story/what-2026-midterms-could-mean-markets" target="_blank" rel="noopener">Charles Schwab, What the 2026 Midterms Could Mean for the Markets</a></li>
-      <li><a href="https://www.khan.co.kr/article/202611022112005/" target="_blank" rel="noopener">경향신문, 민주당 7대 격전지 중 최소 5곳 이겨야 상원 탈환 (11/2)</a></li>
-      <li><a href="https://www.joongangenews.com/news/articleView.html?idxno=560291" target="_blank" rel="noopener">중앙이코노미뉴스, 민주 하원 83%·상원 63% 전망</a></li>
-      <li><a href="https://www.hankyung.com/article/2026103175746" target="_blank" rel="noopener">한국경제, 누가 이겨야 코스피에 유리할까 (대신·신한 분석)</a></li>
-      <li><a href="https://www.imaeil.com/page/view/2026102700343950481" target="_blank" rel="noopener">매일신문, 결과 따라 수혜 업종도 달라진다 (한국투자증권)</a></li>
-      <li><a href="https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=01764646645641784" target="_blank" rel="noopener">이데일리, 월가가 꼽은 수혜·피해 업종 (11/2)</a></li>
-    </ol>
-    <p class="disclaimer">수치는 11월 1~2일 기사·예측시장 기준이며 투표 당일 계속 바뀌어요. 섹터 정리는 각 증권사·외신의 의견을 옮긴 것으로 투자 권유가 아니에요. 예측시장 확률은 참가자들의 베팅 가격이고 공식 전망이 아니에요.</p>
-  </section>
+    <details class="acc">
+      <summary>양쪽 논리</summary>
+      <div class="acc-body two">
+        <div class="side d">
+          <h3>민주당이 이긴다고 보는 근거</h3>
+          <ul>
+            <li><b>집권당 징크스</b> 대통령 소속 정당은 중간선거에서 하원 의석을 잃는 경우가 대부분</li>
+            <li><b>경제 불만</b> 관세·물가, 이란 전쟁 여파로 오른 연료·비료 가격</li>
+            <li><b>여론조사 격차</b> 전국 정당 지지 민주 +8.6%p, 2017년 이후 최대</li>
+            <li><b>사전투표 열기</b> 5,300만 명 돌파, 민주 지지자 비중이 더 높음</li>
+            <li><b>공화 텃밭 균열</b> 메인·텍사스·오하이오 민주 우세, 캔자스 접전</li>
+          </ul>
+        </div>
+        <div class="side r">
+          <h3>공화당이 지킨다고 보는 근거</h3>
+          <ul>
+            <li><b>상원 지도</b> 민주는 기존 의석을 다 지키고 공화 의석 4곳을 더 뺏어야 과반</li>
+            <li><b>초접전</b> 격전지 7곳 모두 오차범위, 작은 오차로도 뒤집힘</li>
+            <li><b>여론조사 오차 전례</b> 공화 표 과소평가 시 상원은 반반 (대신증권)</li>
+            <li><b>민주 내분</b> 미시간 경선 패배자가 공화 후보 공개 지지</li>
+            <li><b>좋은 밤 시나리오</b> 공화 상원 최대 52석 가능 (폭스뉴스 분석)</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>시장은 무엇을 보고 있나</summary>
+      <div class="acc-body two">
+        <div class="side n">
+          <h3>미국</h3>
+          <ul>
+            <li><b>업종 차별화</b> 지수 전체보다 업종 간 희비가 커질 것 (월가)</li>
+            <li><b>분점 의회</b> 큰 법안은 어렵고, 예산·2027년 부채한도 협상이 변수 (찰스 슈왑)</li>
+            <li><b>민주 양원</b> 행정부 견제, 인사 인준·규제 정책 대립 확대</li>
+            <li><b>선거 후 주가</b> 1974년 이후 중간선거 6개월 뒤 S&amp;P500 13번 모두 상승, 평균 +12.4%</li>
+          </ul>
+        </div>
+        <div class="side n">
+          <h3>한국</h3>
+          <ul>
+            <li><b>승부처는 상원</b> 하원 민주 탈환은 사실상 확실, 상원은 접전</li>
+            <li><b>민주 승리 시</b> 미 금리·달러 안정 기대, 4분기 코스피 상단 6,700 (대신증권)</li>
+            <li><b>공화 양원 시</b> 원·달러 1,360~1,400원, 코스피 하단 4,950 가능성</li>
+            <li><b>불확실성 해소</b> 1950년 이후 선거 12개월 뒤 S&amp;P500 모두 상승, 코스피 9번 중 6번 상승</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>누가 이기면 어디가 움직이나</summary>
+      <div class="acc-body">
+        <div class="tbl-wrap">
+          <table class="sectors" style="min-width:720px">
+            <thead><tr><th>결과</th><th>미국</th><th>한국</th></tr></thead>
+            <tbody>
+              <tr><td>민주 양원</td><td><span class="up">▲</span> 병원·건강보험, 태양광·풍력<br><span class="down">▼</span> AI 데이터센터, 금융, 암호화폐, 방산</td><td><span class="up">▲</span> 전력기기(HD현대일렉트릭·효성중공업·LS일렉트릭), 헬스케어, 재생에너지, 증권·인터넷·2차전지<br><span class="down">▼</span> 데이터센터 관련주</td></tr>
+              <tr><td>하원 민주 · 상원 공화</td><td>정책 급변 제한, 예산 협상 때 변동성</td><td><span class="up">▲</span> ESS(에너지저장장치)</td></tr>
+              <tr><td>공화 양원</td><td><span class="up">▲</span> 방산(록히드마틴·노스롭그루먼·L3해리스), 금융·암호화폐</td><td><span class="up">▲</span> 방산(한화오션), 원전(두산에너빌리티), 보험</td></tr>
+              <tr><td>결과와 무관</td><td>불확실성 해소 자체가 호재</td><td><span class="up">▲</span> 반도체, 조선, 바이오, 은행, 호텔·레저<br><span class="down">▼</span> 건설, 에너지, 비철금속</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:15px;color:var(--muted)">증권사·외신 의견을 정리한 것으로 투자 권유가 아니에요.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>출처</summary>
+      <div class="acc-body">
+        <ol class="sources">
+          <li><a href="https://news.kalshi.com/p/2026-midterm-predictions" target="_blank" rel="noopener">Kalshi News, 2026 Midterm Predictions</a></li>
+          <li><a href="https://uspollingdata.com/polls/generic-ballot/" target="_blank" rel="noopener">US Polling Data, Generic Ballot</a></li>
+          <li><a href="https://www.foxnews.com/politics/everything-know-house-senate-control-ballot-measures-2026-election-day-poll-closing" target="_blank" rel="noopener">Fox News, House·Senate control and poll closings</a></li>
+          <li><a href="https://www.schwab.com/learn/story/what-2026-midterms-could-mean-markets" target="_blank" rel="noopener">Charles Schwab, What the 2026 Midterms Could Mean for the Markets</a></li>
+          <li><a href="https://www.khan.co.kr/article/202611022112005/" target="_blank" rel="noopener">경향신문, 민주당 7대 격전지 중 최소 5곳 이겨야 상원 탈환</a></li>
+          <li><a href="https://www.joongangenews.com/news/articleView.html?idxno=560291" target="_blank" rel="noopener">중앙이코노미뉴스, 민주 하원 83%·상원 63% 전망</a></li>
+          <li><a href="https://www.hankyung.com/article/2026103175746" target="_blank" rel="noopener">한국경제, 누가 이겨야 코스피에 유리할까</a></li>
+          <li><a href="https://www.imaeil.com/page/view/2026102700343950481" target="_blank" rel="noopener">매일신문, 결과 따라 수혜 업종도 달라진다</a></li>
+          <li><a href="https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=01764646645641784" target="_blank" rel="noopener">이데일리, 월가가 꼽은 수혜·피해 업종</a></li>
+        </ol>
+      </div>
+    </details>
+  </div>
 </div>
 
 <script>
-// ───────── 저장소 설정 ─────────
+// ───────── 저장소 ─────────
 const REPO = { owner: 'venturejs', name: 'midterm-coffee', path: 'votes.json', branch: 'main' };
 const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}`;
-
-// 공유 링크의 #k=… 에서 쓰기 키를 받아 이 브라우저에 보관하고 주소창에서는 지움
 const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 (function takeKey() {
   const h = new URLSearchParams(location.hash.slice(1));
@@ -519,381 +368,276 @@ const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { ret
 const KEY = LS.get('mc_key');
 const IS_ADMIN = LS.get('mc_admin') === '1';
 
-// ───────── 일정 (한국 시각) ─────────
+// ───────── 일정 ─────────
 const T = s => Date.parse(s);
-const DEADLINE = T('2026-11-03T23:00:00Z');          // 11/4(수) 08:00 KST
+const DEADLINE = T('2026-11-03T23:00:00Z');
 const EVENTS = [
-  { at: T('2026-11-03T11:00:00Z'), t: '11/3(화) 20:00', d: '동부부터 투표 시작' },
-  { at: DEADLINE, t: '11/4(수) 08:00', d: '첫 투표 마감 · 커피내기 마감', key: true },
-  { at: T('2026-11-04T00:00:00Z'), t: '11/4(수) 09:00', d: '동부 주요 주 마감, 개표 시작' },
-  { at: T('2026-11-04T06:00:00Z'), t: '11/4(수) 15:00', d: '알래스카 마감, 투표 종료' },
-  { at: T('2026-11-05T00:00:00Z'), t: '11/5(목)~', d: '접전 의석은 확정까지 며칠 걸릴 수 있어요' },
+  { at: T('2026-11-03T11:00:00Z'), t: '11/3(화) 20:00', d: '투표 시작' },
+  { at: DEADLINE, t: '11/4(수) 08:00', d: '첫 투표 마감 · 찍기 마감', key: true },
+  { at: T('2026-11-04T00:00:00Z'), t: '11/4(수) 09:00', d: '본격 개표' },
+  { at: T('2026-11-04T06:00:00Z'), t: '11/4(수) 15:00', d: '전체 투표 종료' },
+  { at: T('2026-11-05T00:00:00Z'), t: '11/5(목)~', d: '접전 지역 확정' },
 ];
-const kstFmt = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
-const fmtLeft = ms => { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h}시간 ${m % 60}분` : `${m}분`; };
+const kst = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+const kstT = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: false });
+const left = ms => { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h}시간 ${m % 60}분` : `${m}분`; };
 
 // ───────── 상태 ─────────
-const DEFAULT_RULE = '꼴찌가 1등에게 커피 사기';
-const S = {
-  mode: 'loading', data: { config: {}, picks: {} }, sha: null,
-  draft: { name: LS.get('mc_name') || '', house: null, senate: null, hSeats: '', sSeats: '', memo: '' },
-  draftTouched: false, saving: false, msg: '', msgType: '', updated: null,
-};
+const S = { mode: 'loading', data: { config: {}, picks: {} }, draft: { name: LS.get('mc_name') || '', house: null, senate: null, memo: '' }, touched: false, saving: false, msg: '', msgType: '', updated: null };
 const cfg = () => S.data.config || {};
-function isLocked() {
-  const c = cfg();
-  if (c.locked === true) return true;
-  if (c.locked === false) return false;
-  return Date.now() >= DEADLINE;
-}
+const isLocked = () => cfg().locked === true ? true : cfg().locked === false ? false : Date.now() >= DEADLINE;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const P = v => v === 'D' ? '<span class="pill d">민주</span>' : v === 'R' ? '<span class="pill r">공화</span>' : '<span class="muted">-</span>';
+const $ = id => document.getElementById(id);
 
-// ───────── GitHub 읽기·쓰기 ─────────
-const b64enc = str => { const bytes = new TextEncoder().encode(str); let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+// ───────── GitHub ─────────
+const b64enc = str => { const b = new TextEncoder().encode(str); let s = ''; b.forEach(x => s += String.fromCharCode(x)); return btoa(s); };
 const b64dec = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, '')), c => c.charCodeAt(0)));
 const headers = () => KEY ? { Authorization: `Bearer ${KEY}`, Accept: 'application/vnd.github+json' } : { Accept: 'application/vnd.github+json' };
-
 async function load() {
   try {
-    let json, sha = null;
+    let json;
     if (KEY) {
       const r = await fetch(`${API}?ref=${REPO.branch}&t=${Date.now()}`, { headers: headers(), cache: 'no-store' });
-      if (!r.ok) throw new Error('read ' + r.status);
-      const j = await r.json(); sha = j.sha; json = JSON.parse(b64dec(j.content));
+      if (!r.ok) throw 0;
+      json = JSON.parse(b64dec((await r.json()).content));
     } else {
       const r = await fetch(`https://raw.githubusercontent.com/${REPO.owner}/${REPO.name}/${REPO.branch}/${REPO.path}?t=${Date.now()}`, { cache: 'no-store' });
-      if (!r.ok) throw new Error('raw ' + r.status);
+      if (!r.ok) throw 0;
       json = await r.json();
     }
-    S.data = { config: json.config || {}, picks: json.picks || {} }; S.sha = sha;
+    S.data = { config: json.config || {}, picks: json.picks || {} };
     S.mode = 'live'; S.updated = Date.now();
     const mine = S.data.picks[S.draft.name.trim()];
-    if (mine && !S.draftTouched) Object.assign(S.draft, { house: mine.house, senate: mine.senate, hSeats: mine.hSeats ?? '', sSeats: mine.sSeats ?? '', memo: mine.memo || '' });
-  } catch (e) {
-    if (S.mode === 'loading') S.mode = 'error';
-  }
+    if (mine && !S.touched) Object.assign(S.draft, { house: mine.house, senate: mine.senate, memo: mine.memo || '' });
+  } catch (e) { if (S.mode === 'loading') S.mode = 'error'; }
   render();
 }
-
-// 최신 파일을 읽고 → 내 변경을 얹어서 → 저장. 동시에 저장해 충돌하면 다시 시도
 async function commit(mutate, message) {
   for (let i = 0; i < 4; i++) {
     const r = await fetch(`${API}?ref=${REPO.branch}&t=${Date.now()}`, { headers: headers(), cache: 'no-store' });
     if (!r.ok) throw { code: r.status };
     const j = await r.json();
-    const data = JSON.parse(b64dec(j.content));
-    data.config = data.config || {}; data.picks = data.picks || {};
+    const data = JSON.parse(b64dec(j.content)); data.config = data.config || {}; data.picks = data.picks || {};
     mutate(data);
-    const put = await fetch(API, {
-      method: 'PUT', headers: { ...headers(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, content: b64enc(JSON.stringify(data, null, 2) + '\n'), sha: j.sha, branch: REPO.branch }),
-    });
-    if (put.ok) { S.data = data; S.sha = (await put.json()).content.sha; S.updated = Date.now(); return; }
+    const put = await fetch(API, { method: 'PUT', headers: { ...headers(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, content: b64enc(JSON.stringify(data, null, 2) + '\n'), sha: j.sha, branch: REPO.branch }) });
+    if (put.ok) { S.data = data; S.updated = Date.now(); return; }
     if (put.status !== 409 && put.status !== 422) throw { code: put.status };
     await new Promise(res => setTimeout(res, 400 + Math.random() * 600));
   }
   throw { code: 'conflict' };
 }
 
-// ───────── 개표 상황판 ─────────
+// ───────── 실시간 시장 ─────────
 const PM = 'https://gamma-api.polymarket.com/events?slug=';
-const CHAMBERS = {
-  house:  { slug: 'which-party-will-win-the-house-in-2026',  name: '하원', total: 435, maj: 218, base: { D: 0, R: 0 }, races: 435 },
-  senate: { slug: 'which-party-will-win-the-senate-in-2026', name: '상원', total: 100, maj: 51,  base: { D: 34, R: 31 }, races: 35 },
+const CH = {
+  house:  { slug: 'which-party-will-win-the-house-in-2026',  name: '하원', total: 435, maj: 218, rmaj: 218, base: { D: 0, R: 0 } },
+  senate: { slug: 'which-party-will-win-the-senate-in-2026', name: '상원', total: 100, maj: 51,  rmaj: 50,  base: { D: 34, R: 31 } },
 };
 const RACES = [
-  { st: '메인', slug: 'maine', now: 'R', d: 'Troy Jackson', r: 'Susan Collins', note: '중도파 콜린스 현역이 관세·난방유 가격 여파로 고전' },
-  { st: '텍사스', slug: 'texas', now: 'R', d: 'James Talarico', r: 'Ken Paxton', note: '탈라리코가 여론조사 우위, 팩스턴은 모금에서도 열세' },
-  { st: '오하이오', slug: 'ohio', now: 'R', d: 'Sherrod Brown', r: 'Jon Husted', note: '밴스 부통령 기반. 암호화폐 슈퍼PAC이 브라운 낙선에 5,500만 달러' },
-  { st: '미시간', slug: 'michigan', now: 'D', d: 'Abdul El-Sayed', r: 'Mike Rogers', note: '민주가 지켜야 하는 경합. 당내 분열이 변수' },
-  { st: '캔자스', slug: 'kansas', now: 'R', d: 'Adam Hamilton', r: 'Roger Marshall', note: '1932년 이후 민주 상원의원 없음. 농민 불만' },
-  { st: '알래스카', slug: 'alaska', now: 'R', d: 'Mary Peltola', r: 'Dan Sullivan', note: '동명이인 후보 논란. 확정이 가장 늦을 수 있음' },
-  { st: '아이오와', slug: 'iowa', now: 'R', d: 'Josh Turek', r: 'Ashley Hinson', note: '공화가 지킬 가능성이 가장 높다던 곳' },
-  { st: '사우스캐롤라이나', slug: 'south-carolina', now: 'R', d: 'Annie Andrews', r: 'Graham', note: '예측시장에서 공화 우세 유지' },
+  { st: '메인', slug: 'maine', now: 'R', d: 'Troy Jackson', r: 'Susan Collins' },
+  { st: '텍사스', slug: 'texas', now: 'R', d: 'James Talarico', r: 'Ken Paxton' },
+  { st: '오하이오', slug: 'ohio', now: 'R', d: 'Sherrod Brown', r: 'Jon Husted' },
+  { st: '미시간', slug: 'michigan', now: 'D', d: 'Abdul El-Sayed', r: 'Mike Rogers' },
+  { st: '캔자스', slug: 'kansas', now: 'R', d: 'Adam Hamilton', r: 'Roger Marshall' },
+  { st: '알래스카', slug: 'alaska', now: 'R', d: 'Mary Peltola', r: 'Dan Sullivan' },
+  { st: '아이오와', slug: 'iowa', now: 'R', d: 'Josh Turek', r: 'Ashley Hinson' },
+  { st: '사우스캐롤라이나', slug: 'south-carolina', now: 'R', d: 'Annie Andrews', r: 'Graham' },
 ];
 const L = { house: null, senate: null, races: {}, at: null, err: false };
 const yes = m => { try { return parseFloat(JSON.parse(m.outcomePrices)[0]); } catch (e) { return null; } };
+const nm = m => m ? (m.groupItemTitle || '').replace(/^Sen\.\s*/, '').replace(/\s*\([DR]\)\s*$/, '') : null;
 async function loadMarkets() {
   try {
-    const [h, s] = await Promise.all(['house', 'senate'].map(k => fetch(PM + CHAMBERS[k].slug, { cache: 'no-store' }).then(r => r.json())));
-    for (const [k, ev] of [['house', h], ['senate', s]]) {
-      const m = ev[0].markets.find(x => (x.groupItemTitle || '').startsWith('Democratic'));
-      L[k] = { p: yes(m), d1: m.oneDayPriceChange ?? null, h1: m.oneHourPriceChange ?? null };
-    }
-    const evs = await Promise.all(RACES.map(r => fetch(PM + r.slug + '-senate-election-winner', { cache: 'no-store' }).then(x => x.json()).catch(() => null)));
+    const evs = await Promise.all(['house', 'senate'].map(k => fetch(PM + CH[k].slug, { cache: 'no-store' }).then(r => r.json())));
+    ['house', 'senate'].forEach((k, i) => {
+      const m = evs[i][0].markets.find(x => (x.groupItemTitle || '').startsWith('Democratic'));
+      L[k] = { p: yes(m), c: m.oneHourPriceChange ?? m.oneDayPriceChange ?? null };
+    });
+    const rs = await Promise.all(RACES.map(r => fetch(PM + r.slug + '-senate-election-winner', { cache: 'no-store' }).then(x => x.json()).catch(() => null)));
     RACES.forEach((r, i) => {
-      const ms = evs[i] && evs[i][0] ? evs[i][0].markets.filter(m => m.outcomePrices) : [];
-      const find = name => ms.find(m => (m.groupItemTitle || '').includes(name));
-      const dm = find(r.d), rm = find(r.r);
+      const ms = rs[i] && rs[i][0] ? rs[i][0].markets.filter(m => m.outcomePrices) : [];
+      const dm = ms.find(m => (m.groupItemTitle || '').includes(r.d)), rm = ms.find(m => (m.groupItemTitle || '').includes(r.r));
       const pd = dm ? yes(dm) : null, pr = rm ? yes(rm) : null;
-      const nm = m => m ? (m.groupItemTitle || '').replace(/^Sen\.\s*/, '').replace(/\s*\([DR]\)\s*$/, '') : null;
-      L.races[r.slug] = pd != null && pr != null ? { d: pd / (pd + pr), r: pr / (pd + pr), dn: nm(dm), rn: nm(rm) } : null;
+      L.races[r.slug] = pd != null && pr != null ? { d: pd / (pd + pr), dn: nm(dm), rn: nm(rm) } : null;
     });
     L.at = Date.now(); L.err = false;
   } catch (e) { L.err = true; }
-  renderLive(); renderRaces();
+  renderLive();
 }
 const pct = v => v == null ? '-' : `${Math.round(v * 100)}%`;
-const chg = v => v == null || Math.abs(v) < .005 ? '' : `<span class="chg ${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲' : '▼'} ${Math.abs(Math.round(v * 100))}%p</span>`;
-
-function renderLive() {
-  const lv = (cfg().live) || {};
-  const now = Date.now();
-  const phase = now < T('2026-11-03T11:00:00Z') ? '투표 시작 전' : now < DEADLINE ? '투표 진행 중' : now < T('2026-11-04T06:00:00Z') ? '개표 진행 중' : '개표 마무리 단계';
-  document.getElementById('liveHead').innerHTML = `
-    <div class="headline"><span class="dot" ${now < DEADLINE ? 'style="animation:none;background:var(--muted)"' : ''}></span>
-      <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-        <b>${phase}${lv.note ? ` · ${esc(lv.note)}` : ''}</b>
-        <span class="small muted">${lv.at ? `확정 의석 ${kstFmt.format(lv.at)} 진행자 입력` : '확정 의석은 개표가 시작되면 진행자가 입력해요'}${L.at ? ` · 확률 ${kstFmt.format(L.at)} 갱신` : L.err ? ' · 확률을 불러오지 못했어요' : ''}</span>
-      </div></div>
-    <div class="live-links">
-      <a href="https://search.naver.com/search.naver?where=news&query=%EB%AF%B8%EA%B5%AD+%EC%A4%91%EA%B0%84%EC%84%A0%EA%B1%B0+%EA%B0%9C%ED%91%9C" target="_blank" rel="noopener">네이버 뉴스 · 개표 속보</a>
-      <a href="https://votes.decisiondeskhq.com/forecast/2026" target="_blank" rel="noopener">Decision Desk HQ</a>
-    </div>`;
-  for (const k of ['house', 'senate']) {
-    const C = CHAMBERS[k], m = L[k] || {};
-    const d = (k === 'senate' ? C.base.D : 0) + (+lv[k + 'D'] || 0), r = (k === 'senate' ? C.base.R : 0) + (+lv[k + 'R'] || 0);
-    const left = C.total - d - r;
-    const rmaj = k === 'senate' ? 50 : C.maj;
-    const status = d >= C.maj ? `<b style="color:var(--dem)">민주 과반 확정</b>` : r >= rmaj ? `<b style="color:var(--rep)">공화 과반 확정</b>` : `민주 과반까지 ${C.maj - d}석 · 공화 ${k === 'senate' ? '수성' : '과반'}까지 ${rmaj - r}석`;
-    document.getElementById(k === 'house' ? 'liveHouse' : 'liveSenate').innerHTML = `
-      <div class="live-top"><h3>${C.name}</h3>
-        <div class="prob"><span class="lbl">민주 승리 확률</span><b style="color:var(--dem)">${pct(m.p)}</b>${chg(m.h1 ?? m.d1)}</div></div>
-      <div class="bar" style="height:10px"><i class="d" style="width:${(m.p || 0) * 100}%;padding:0"></i><i class="r" style="width:${(1 - (m.p || 0)) * 100}%;padding:0"></i></div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <span class="small">확정 의석 ${status}</span>
-        <div class="seatbar">${d ? `<i class="d" style="width:${d / C.total * 100}%">민주 ${d}</i>` : ''}${r ? `<i class="r" style="width:${r / C.total * 100}%">공화 ${r}</i>` : ''}<span class="maj" style="left:${C.maj / C.total * 100}%"></span></div>
-        <div class="seatleg"><span>과반선 ${C.maj}석${k === 'senate' ? ' (50:50이면 공화)' : ''}</span><span>미확정 ${left}석</span><span>${k === 'senate' ? '이번에 안 뽑는 의석 민주 34·공화 31 포함' : `전체 ${C.total}석`}</span></div>
-      </div>`;
-  }
-}
-
-function renderRaces() {
-  const calls = (cfg().live && cfg().live.calls) || {};
-  document.getElementById('raceUpd').textContent = L.at ? `${kstFmt.format(L.at)} 기준` : '';
-  document.getElementById('raceRows').innerHTML = RACES.map(r => {
-    const o = L.races[r.slug], call = calls[r.slug] || (o && o.d > .97 ? 'D' : o && o.r > .97 ? 'R' : null);
-    const bar = o ? `<div class="oddsbar"><i class="d" style="width:${o.d * 100}%">${o.d >= .12 ? pct(o.d) : ''}</i><i class="r" style="width:${o.r * 100}%">${o.r >= .12 ? `${100 - Math.round(o.d * 100)}%` : ''}</i></div>` : '<span class="muted small">불러오는 중</span>';
-    return `<tr><td>${r.st}${call ? `<span class="called ${call.toLowerCase()}">${call === 'D' ? '민주' : '공화'} 승</span>` : ''}</td><td>${r.now === 'D' ? '민주' : '공화'}</td>
-      <td class="small">${esc(o?.dn || r.d)} <span class="muted">vs</span> ${esc(o?.rn || r.r)}</td><td>${bar}</td><td class="small">${esc(r.note)}</td></tr>`;
-  }).join('');
-}
-
-// ───────── 점수 ─────────
-function score(p, res) {
-  let pts = 0;
-  if (res.house && p.house === res.house) pts++;
-  if (res.senate && p.senate === res.senate) pts++;
-  const sd = res.sSeats != null && p.sSeats != null ? Math.abs(p.sSeats - res.sSeats) : 999;
-  const hd = res.hSeats != null && p.hSeats != null ? Math.abs(p.hSeats - res.hSeats) : 999;
-  return { pts, sd, hd };
-}
-function ranked() {
-  const res = cfg().result || {};
-  const rows = Object.entries(S.data.picks).filter(([, p]) => p && (p.house === 'D' || p.house === 'R')).map(([name, p]) => ({ name, p, s: score(p, res) }));
-  const hasRes = !!(res.house || res.senate);
-  if (hasRes) rows.sort((a, b) => b.s.pts - a.s.pts || a.s.sd - b.s.sd || a.s.hd - b.s.hd || (a.p.at || 0) - (b.p.at || 0));
-  else rows.sort((a, b) => (a.p.at || 0) - (b.p.at || 0));
-  let rank = 0, prev = null;
-  rows.forEach((r, i) => { const k = `${r.s.pts}|${r.s.sd}|${r.s.hd}`; if (k !== prev) rank = i + 1; r.rank = rank; prev = k; });
-  return rows;
-}
+const chg = v => v == null || Math.abs(v) < .005 ? '' : `<span class="chg ${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲' : '▼'}${Math.abs(Math.round(v * 100))}</span>`;
 
 // ───────── 화면 ─────────
 function renderClock() {
   const now = Date.now();
-  document.getElementById('kst').textContent = kstFmt.format(now);
-  document.getElementById('phase').textContent = cfg().result?.house ? '결과 발표됨' : isLocked() ? '찍기 마감 · 개표 기다리는 중' : `찍기 마감까지 ${fmtLeft(DEADLINE - now)}`;
+  $('kst').textContent = kst.format(now);
+  $('phase').innerHTML = isLocked() ? '찍기 마감' : `찍기 마감까지 <em>${left(DEADLINE - now)}</em>`;
   let cur = -1; EVENTS.forEach((e, i) => { if (now >= e.at) cur = i; });
-  document.getElementById('timeline').innerHTML = EVENTS.map((e, i) =>
-    `<div class="tl ${i < cur ? 'past' : ''} ${i === cur ? 'now' : ''} ${e.key ? 'key' : ''}"><b>${e.t}</b><span>${e.d}</span></div>`).join('');
+  $('timeline').innerHTML = EVENTS.map((e, i) => `<div class="tl ${i < cur ? 'past' : ''} ${i === cur ? 'now' : ''} ${e.key ? 'key' : ''}"><b>${e.t}</b><span>${e.d}</span></div>`).join('');
+}
+
+function renderLive() {
+  const lv = cfg().live || {}, calls = lv.calls || {}, now = Date.now();
+  const phase = now < T('2026-11-03T11:00:00Z') ? '투표 시작 전' : now < DEADLINE ? '투표 진행 중' : now < T('2026-11-04T06:00:00Z') ? '개표 진행 중' : '개표 마무리';
+  const counting = now >= DEADLINE;
+  $('liveBadge').className = 'live-badge' + (counting ? '' : ' idle');
+  $('liveMeta').textContent = L.at ? `${kstT.format(L.at)} 갱신` : L.err ? '불러오지 못함' : '';
+  $('headline').innerHTML = `<span>${phase}${lv.note ? ` · ${esc(lv.note)}` : ''}</span>
+    <span class="links"><a href="https://search.naver.com/search.naver?where=news&query=%EB%AF%B8%EA%B5%AD+%EC%A4%91%EA%B0%84%EC%84%A0%EA%B1%B0+%EA%B0%9C%ED%91%9C" target="_blank" rel="noopener">개표 뉴스</a><a href="https://votes.decisiondeskhq.com/forecast/2026" target="_blank" rel="noopener">Decision Desk HQ</a></span>`;
+  for (const k of ['house', 'senate']) {
+    const C = CH[k], m = L[k] || {};
+    const d = C.base.D + (+lv[k + 'D'] || 0), r = C.base.R + (+lv[k + 'R'] || 0), rest = C.total - d - r;
+    const line = d >= C.maj ? '<b style="color:var(--dem)">민주 과반 확정</b>' : r >= C.rmaj ? '<b style="color:var(--rep)">공화 과반 확정</b>' : `확정 의석 · 민주 과반까지 <b class="num">${C.maj - d}</b>석, 공화 ${k === 'senate' ? '수성' : '과반'}까지 <b class="num">${C.rmaj - r}</b>석`;
+    $(k === 'house' ? 'liveHouse' : 'liveSenate').innerHTML = `
+      <div class="top"><h3>${C.name}</h3><div class="prob"><small>민주 승리 확률</small><b>${pct(m.p)}</b>${chg(m.c)}</div></div>
+      <div class="bar"><i class="d" style="width:${(m.p || 0) * 100}%"></i><i class="r" style="width:${(1 - (m.p || 0)) * 100}%"></i></div>
+      <div class="seatline">${line}</div>
+      <div class="seatbar">${d ? `<i class="d" style="width:${d / C.total * 100}%">민주 ${d}</i>` : ''}${r ? `<i class="r" style="width:${r / C.total * 100}%">공화 ${r}</i>` : ''}<span class="maj" style="left:${C.maj / C.total * 100}%"></span></div>
+      <div class="seatleg"><span>과반 ${C.maj}석</span><span>미확정 ${rest}석</span><span>전체 ${C.total}석</span></div>`;
+  }
+  $('raceRows').innerHTML = RACES.map(r => {
+    const o = L.races[r.slug], call = calls[r.slug] || (o && o.d > .97 ? 'D' : o && o.d < .03 ? 'R' : null);
+    const dP = o ? Math.round(o.d * 100) : null;
+    const bar = o ? `<div class="oddsbar"><i class="d" style="width:${o.d * 100}%">${dP >= 12 ? dP + '%' : ''}</i><i class="r" style="width:${(1 - o.d) * 100}%">${100 - dP >= 12 ? (100 - dP) + '%' : ''}</i></div>` : '<span class="seat-now">-</span>';
+    return `<tr><td>${r.st}${call ? `<span class="tag ${call.toLowerCase()}">${call === 'D' ? '민주' : '공화'} 승</span>` : ''}</td><td class="seat-now">${r.now === 'D' ? '민주' : '공화'}</td>
+      <td class="cand">${esc(o?.dn || r.d)} vs ${esc(o?.rn || r.r)}</td><td>${bar}</td></tr>`;
+  }).join('');
 }
 
 function renderMine() {
-  const el = document.getElementById('mine');
-  if (S.mode === 'loading') { el.innerHTML = '<h3>내 예측</h3><p class="muted">불러오는 중…</p>'; return; }
-  if (!KEY) {
-    el.innerHTML = `<h3>내 예측</h3><div class="notice">투표하려면 진행자가 공유한 <b>참여 링크</b>로 들어와 주세요. 이 주소로는 결과와 판세만 볼 수 있어요.</div>`;
-    return;
-  }
+  const el = $('mine');
+  if (S.mode === 'loading') { el.innerHTML = '<p class="empty">불러오는 중</p>'; $('mineMeta').textContent = ''; return; }
+  if (!KEY) { el.innerHTML = '<div class="notice">참여 링크로 들어오면 찍을 수 있어요.</div>'; $('mineMeta').textContent = ''; return; }
   const locked = isLocked(), d = S.draft, mine = S.data.picks[d.name.trim()];
+  $('mineMeta').textContent = mine ? `저장됨 ${kstT.format(mine.at || Date.now())}` : '';
   const dis = locked || S.saving ? 'disabled' : '';
-  const btn = (k, v, label, sub) => `<button type="button" class="${v.toLowerCase()}" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}" ${dis}>${label}<small>${sub}</small></button>`;
+  const btn = (k, v, label) => `<button type="button" class="${v.toLowerCase()}" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}" ${dis}>${label}</button>`;
   el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
-      <h3>내 예측</h3>
-      <span class="small muted">${mine ? `저장됨 · ${kstFmt.format(mine.at || Date.now())}` : '아직 안 찍었어요'}</span>
-    </div>
-    ${locked ? '<div class="notice">찍기가 마감됐어요. 저장된 예측으로 승부해요.</div>' : ''}
-    <label class="field">이름<input id="name" type="text" maxlength="12" placeholder="예: 김민수" value="${esc(d.name)}" autocomplete="off" ${dis}></label>
-    <div class="pick-q"><label class="q">하원 다수당은?</label><div class="choice">${btn('house', 'D', '민주당', '218석 이상')}${btn('house', 'R', '공화당', '수성')}</div></div>
-    <div class="pick-q"><label class="q">상원 다수당은?</label><div class="choice">${btn('senate', 'D', '민주당', '51석 이상')}${btn('senate', 'R', '공화당', '50석 이상')}</div></div>
-    <div class="pick-q">
-      <label class="q">동점 대비 의석 예상 <span class="muted small" style="font-weight:400">(선택)</span></label>
-      <div class="seats">
-        <label class="field">민주당 상원 의석<input id="sSeats" type="number" inputmode="numeric" min="40" max="60" placeholder="예: 51" value="${esc(d.sSeats)}" ${dis}></label>
-        <label class="field">민주당 하원 의석<input id="hSeats" type="number" inputmode="numeric" min="180" max="270" placeholder="예: 228" value="${esc(d.hSeats)}" ${dis}></label>
-      </div>
-    </div>
-    <label class="field">한마디 <input id="memo" type="text" maxlength="40" placeholder="예: 텍사스가 뒤집힌다" value="${esc(d.memo)}" ${dis}></label>
-    <button class="btn" id="save" ${locked || S.saving || !d.house || !d.senate || !d.name.trim() ? 'disabled' : ''}>${mine ? '예측 수정하기' : '이걸로 찍기'}</button>
-    <p class="status ${S.msgType}">${esc(S.msg)}</p>
-    <p class="small muted">같은 이름으로 다시 찍으면 수정돼요. 마감은 11/4(수) 오전 8시예요.</p>`;
-  el.querySelectorAll('.choice button').forEach(b => b.onclick = () => { S.draft[b.dataset.k] = b.dataset.v; S.draftTouched = true; S.msg = ''; renderMine(); });
-  ['sSeats', 'hSeats', 'memo'].forEach(id => { const i = el.querySelector('#' + id); if (i) i.oninput = () => { S.draft[id] = i.value; S.draftTouched = true; }; });
+    ${locked ? '<div class="notice">찍기가 마감됐어요.</div>' : ''}
+    <div class="form">
+      <label><span class="q">이름</span><input id="name" type="text" maxlength="12" placeholder="이름" value="${esc(d.name)}" autocomplete="off" ${dis}></label>
+      <div><span class="q">하원 다수당</span><div class="choice">${btn('house', 'D', '민주당')}${btn('house', 'R', '공화당')}</div></div>
+      <div><span class="q">상원 다수당</span><div class="choice">${btn('senate', 'D', '민주당')}${btn('senate', 'R', '공화당')}</div></div>
+      <label><span class="q">한마디</span><input id="memo" type="text" maxlength="40" placeholder="선택" value="${esc(d.memo)}" ${dis}></label>
+      <button class="btn" id="save" ${locked || S.saving || !d.house || !d.senate || !d.name.trim() ? 'disabled' : ''}>${mine ? '수정하기' : '찍기'}</button>
+      <p class="status ${S.msgType}">${esc(S.msg)}</p>
+    </div>`;
+  el.querySelectorAll('.choice button').forEach(b => b.onclick = () => { S.draft[b.dataset.k] = b.dataset.v; S.touched = true; S.msg = ''; renderMine(); });
+  const memo = el.querySelector('#memo'); if (memo) memo.oninput = () => { S.draft.memo = memo.value; S.touched = true; };
   const n = el.querySelector('#name');
   if (n) {
-    n.oninput = () => { S.draft.name = n.value; const s = el.querySelector('#save'); if (s) s.disabled = isLocked() || S.saving || !S.draft.house || !S.draft.senate || !n.value.trim(); };
-    n.onchange = () => {
-      LS.set('mc_name', n.value.trim());
-      const p = S.data.picks[n.value.trim()];
-      if (p) Object.assign(S.draft, { house: p.house, senate: p.senate, hSeats: p.hSeats ?? '', sSeats: p.sSeats ?? '', memo: p.memo || '' });
-      renderMine();
-    };
+    n.oninput = () => { S.draft.name = n.value; el.querySelector('#save').disabled = isLocked() || S.saving || !S.draft.house || !S.draft.senate || !n.value.trim(); };
+    n.onchange = () => { LS.set('mc_name', n.value.trim()); const p = S.data.picks[n.value.trim()]; if (p) Object.assign(S.draft, { house: p.house, senate: p.senate, memo: p.memo || '' }); renderMine(); };
   }
-  const s = el.querySelector('#save'); if (s) s.onclick = savePick;
+  el.querySelector('#save').onclick = savePick;
 }
 
 async function savePick() {
   const d = S.draft, name = d.name.trim().slice(0, 12);
   if (!name) return;
-  const num = (v, lo, hi) => { const n = parseInt(v, 10); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
-  const pick = { house: d.house, senate: d.senate, hSeats: num(d.hSeats, 150, 300), sSeats: num(d.sSeats, 35, 65), memo: String(d.memo || '').slice(0, 40), at: Date.now() };
+  const pick = { house: d.house, senate: d.senate, memo: String(d.memo || '').slice(0, 40), at: Date.now() };
   LS.set('mc_name', name);
-  S.saving = true; S.msg = '저장하는 중…'; S.msgType = ''; renderMine();
+  S.saving = true; S.msg = '저장 중'; S.msgType = ''; renderMine();
   try {
     await commit(data => {
       if (!(data.config.locked === false) && (data.config.locked === true || Date.now() >= DEADLINE)) throw { code: 'locked' };
       data.picks[name] = pick;
     }, `vote: ${name}`);
-    S.draftTouched = false; S.msg = '저장했어요.'; S.msgType = 'ok';
+    S.touched = false; S.msg = '저장했어요'; S.msgType = 'ok';
   } catch (e) {
-    S.msg = e.code === 'locked' ? '찍기가 마감됐어요.'
-      : e.code === 401 || e.code === 403 || e.code === 404 ? '저장 권한이 없어요. 참여 링크가 만료됐을 수 있으니 진행자에게 새 링크를 받아 주세요.'
-      : '저장하지 못했어요. 잠시 후 다시 눌러 주세요.';
+    S.msg = e.code === 'locked' ? '찍기가 마감됐어요' : [401, 403, 404].includes(e.code) ? '저장 권한이 없어요. 진행자에게 새 링크를 받아 주세요' : '저장하지 못했어요. 다시 눌러 주세요';
     S.msgType = 'err';
   }
   S.saving = false; render();
 }
 
 function renderBoard() {
-  const el = document.getElementById('boardPanel');
-  if (S.mode === 'loading') { el.innerHTML = '<h3>사무실 집계</h3><p class="muted">불러오는 중…</p>'; return; }
-  if (S.mode === 'error') { el.innerHTML = '<h3>사무실 집계</h3><p class="empty">투표 현황을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</p>'; return; }
-  const rows = ranked(), res = cfg().result || {}, hasRes = !!(res.house || res.senate), n = rows.length;
-  const me = S.draft.name.trim();
-  const cnt = (k, v) => rows.filter(r => r.p[k] === v).length;
-  const bar = k => { const d = cnt(k, 'D'), r = cnt(k, 'R'), t = d + r || 1; return `<div class="bar">${d ? `<i class="d" style="width:${d / t * 100}%">민주 ${d}</i>` : ''}${r ? `<i class="r" style="width:${r / t * 100}%">공화 ${r}</i>` : ''}</div>`; };
-  const lastRank = n ? rows[n - 1].rank : 0;
-  let table;
-  if (!n) table = '<p class="empty">아직 아무도 안 찍었어요. 첫 번째로 찍어 보세요.</p>';
-  else {
-    const head = hasRes ? '<tr><th>순위</th><th>이름</th><th>하원</th><th>상원</th><th>상원·하원 의석</th><th>점수</th></tr>'
-                        : '<tr><th>이름</th><th>하원</th><th>상원</th><th>상원·하원 의석</th><th>한마디</th></tr>';
-    const body = rows.map(r => {
-      const isMe = r.name === me;
-      const cell = k => { const v = r.p[k], cls = res[k] ? (v === res[k] ? ' hit' : ' miss') : ''; return `<span class="pill ${v.toLowerCase()}${cls}">${v === 'D' ? '민주' : '공화'}</span>`; };
-      const who = `<div class="who"><span>${esc(r.name)}${isMe ? ' <span class="muted small">(나)</span>' : ''}</span></div>`;
-      const seats = `<span class="num">${r.p.sSeats ?? '-'} · ${r.p.hSeats ?? '-'}</span>`;
-      if (hasRes) {
-        const loser = r.rank === lastRank && n > 1;
-        return `<tr class="${isMe ? 'me' : ''}"><td class="rank">${r.rank}</td><td>${who}</td><td>${cell('house')}</td><td>${cell('senate')}</td><td>${seats}</td><td class="num"><b>${r.s.pts}</b>점${loser ? ' <span class="coffee">☕ 당번</span>' : ''}</td></tr>`;
-      }
-      return `<tr class="${isMe ? 'me' : ''}"><td>${who}</td><td>${cell('house')}</td><td>${cell('senate')}</td><td>${seats}</td><td class="memo">${esc(r.p.memo || '')}</td></tr>`;
-    }).join('');
-    table = `<div class="board-wrap"><table class="board"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
-  }
+  const el = $('board');
+  if (S.mode === 'loading') { el.innerHTML = '<p class="empty">불러오는 중</p>'; return; }
+  if (S.mode === 'error') { el.innerHTML = '<p class="empty">집계를 불러오지 못했어요</p>'; return; }
+  const rows = Object.entries(S.data.picks).filter(([, p]) => p && (p.house === 'D' || p.house === 'R')).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
+  const n = rows.length, me = S.draft.name.trim();
+  $('boardMeta').innerHTML = `<b class="num" style="color:var(--fg)">${n}</b>명 참여${S.updated ? ` · ${kstT.format(S.updated)}` : ''}`;
+  const c = (k, v) => rows.filter(([, p]) => p[k] === v).length;
+  const per = x => n ? Math.round(x / n * 100) : 0;
+  const stat = (k, title) => {
+    const d = c(k, 'D'), r = c(k, 'R');
+    return `<div class="stat"><h3>${title}</h3>
+      <div class="split"><b class="d">${per(d)}<small>%</small></b><span>민주 ${d} · 공화 ${r}</span><b class="r">${per(r)}<small>%</small></b></div>
+      <div class="bar">${d ? `<i class="d" style="width:${per(d)}%"></i>` : ''}${r ? `<i class="r" style="width:${per(r)}%"></i>` : ''}</div></div>`;
+  };
+  const combo = (h, s) => rows.filter(([, p]) => p.house === h && p.senate === s).length;
+  const P = v => `<span class="pill ${v.toLowerCase()}">${v === 'D' ? '민주' : '공화'}</span>`;
   el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
-      <h3>사무실 집계 <span class="muted num" style="font-weight:400">${n}명 참여</span></h3>
-      ${hasRes ? `<span class="small">결과: 하원 ${P(res.house)} 상원 ${P(res.senate)}</span>` : `<span class="small muted">${S.updated ? `${kstFmt.format(S.updated)} 갱신` : ''}</span>`}
+    <div class="stats">${stat('house', '하원')}${stat('senate', '상원')}</div>
+    <div class="combo">
+      <div><span>민주 양원</span><b class="num">${combo('D', 'D')}</b></div>
+      <div><span>하원 민주·상원 공화</span><b class="num">${combo('D', 'R')}</b></div>
+      <div><span>하원 공화·상원 민주</span><b class="num">${combo('R', 'D')}</b></div>
+      <div><span>공화 양원</span><b class="num">${combo('R', 'R')}</b></div>
     </div>
-    <div class="rule">☕ <span>벌칙: <b>${esc(cfg().rule || DEFAULT_RULE)}</b></span></div>
-    <div class="tally"><div class="t"><span>하원 예측 분포</span>${bar('house')}</div><div class="t"><span>상원 예측 분포</span>${bar('senate')}</div></div>
-    ${table}
-    <p class="small muted">점수: 하원·상원 다수당을 맞히면 각 1점. 동점이면 민주당 상원 의석 예상이 실제와 가까운 사람, 그다음 하원 의석 예상이 가까운 사람이 앞서요. 30초마다 자동 갱신돼요.</p>
+    ${n ? `<div class="tbl-wrap"><table class="board"><thead><tr><th>이름</th><th>하원</th><th>상원</th><th>한마디</th></tr></thead><tbody>
+      ${rows.map(([name, p]) => `<tr class="${name === me ? 'me' : ''}"><td>${esc(name)}</td><td>${P(p.house)}</td><td>${P(p.senate)}</td><td class="memo">${esc(p.memo || '')}</td></tr>`).join('')}
+    </tbody></table></div>` : '<p class="empty">아직 아무도 안 찍었어요</p>'}
     ${IS_ADMIN && KEY ? adminHtml() : ''}`;
   if (IS_ADMIN && KEY) bindAdmin(el);
 }
 
 function adminHtml() {
-  const r = cfg().result || {}, c = cfg(), lv = c.live || {}, calls = lv.calls || {};
-  const sel = (id, v) => `<select id="${id}"><option value="">미정</option><option value="D" ${v === 'D' ? 'selected' : ''}>민주</option><option value="R" ${v === 'R' ? 'selected' : ''}>공화</option></select>`;
+  const c = cfg(), lv = c.live || {}, calls = lv.calls || {};
   const lockVal = c.locked === true ? 'on' : c.locked === false ? 'off' : 'auto';
   const names = Object.keys(S.data.picks);
   return `<div class="admin">
     <h3>진행자 도구</h3>
-    <div class="grid4">
-      <label class="field">하원 결과${sel('rHouse', r.house)}</label>
-      <label class="field">상원 결과${sel('rSenate', r.senate)}</label>
-      <label class="field">민주 상원 의석<input id="rS" type="number" inputmode="numeric" value="${r.sSeats ?? ''}"></label>
-      <label class="field">민주 하원 의석<input id="rH" type="number" inputmode="numeric" value="${r.hSeats ?? ''}"></label>
-    </div>
-    <div class="grid4" style="grid-template-columns:2fr 1fr">
-      <label class="field">벌칙 문구<input id="rRule" type="text" maxlength="60" value="${esc(c.rule || DEFAULT_RULE)}"></label>
-      <label class="field">찍기 마감<select id="rLock"><option value="auto" ${lockVal === 'auto' ? 'selected' : ''}>자동 (11/4 08:00)</option><option value="on" ${lockVal === 'on' ? 'selected' : ''}>지금 마감</option><option value="off" ${lockVal === 'off' ? 'selected' : ''}>계속 열기</option></select></label>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="rSave">결과·설정 저장</button><span class="status" id="rMsg"></span></div>
-    <h3 style="margin-top:6px">개표 현황 입력 <span class="muted small" style="font-weight:400">언론이 승자를 확정한 선거 수</span></h3>
     <div class="grid4">
       <label class="field">하원 민주 확정<input id="lHD" type="number" inputmode="numeric" min="0" max="435" value="${lv.houseD ?? ''}"></label>
       <label class="field">하원 공화 확정<input id="lHR" type="number" inputmode="numeric" min="0" max="435" value="${lv.houseR ?? ''}"></label>
       <label class="field">상원 민주 승 (35곳 중)<input id="lSD" type="number" inputmode="numeric" min="0" max="35" value="${lv.senateD ?? ''}"></label>
       <label class="field">상원 공화 승 (35곳 중)<input id="lSR" type="number" inputmode="numeric" min="0" max="35" value="${lv.senateR ?? ''}"></label>
     </div>
-    <label class="field">속보 한 줄<input id="lNote" type="text" maxlength="60" placeholder="예: AP, 텍사스 민주 탈라리코 승리 확정" value="${esc(lv.note || '')}"></label>
+    <label class="field">속보 한 줄<input id="lNote" type="text" maxlength="60" value="${esc(lv.note || '')}"></label>
     <div class="grid4">${RACES.map(r => `<label class="field">${r.st}<select id="lc_${r.slug}"><option value="">미정</option><option value="D" ${calls[r.slug] === 'D' ? 'selected' : ''}>민주 승</option><option value="R" ${calls[r.slug] === 'R' ? 'selected' : ''}>공화 승</option></select></label>`).join('')}</div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="lSave">개표 현황 저장</button><span class="status" id="lMsg"></span></div>
-    ${names.length ? `<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap"><label class="field" style="flex:1;min-width:140px">잘못 들어간 이름 지우기<select id="rDel">${names.map(nm => `<option>${esc(nm)}</option>`).join('')}</select></label><button class="btn ghost" id="rDelBtn">지우기</button></div>` : ''}
-    <p class="small muted">공식 결과는 AP 등 언론의 다수당 확정 발표를 기준으로 입력하세요. 상원 50:50이면 부통령이 공화당이라 공화 다수예요.</p>
+    <div class="grid4" style="grid-template-columns:1fr 1fr">
+      <label class="field">찍기 마감<select id="rLock"><option value="auto" ${lockVal === 'auto' ? 'selected' : ''}>자동 (11/4 08:00)</option><option value="on" ${lockVal === 'on' ? 'selected' : ''}>지금 마감</option><option value="off" ${lockVal === 'off' ? 'selected' : ''}>계속 열기</option></select></label>
+      ${names.length ? `<label class="field">이름 지우기<select id="rDel">${names.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>` : '<span></span>'}
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="lSave">저장</button>${names.length ? '<button class="btn line" id="rDelBtn">선택한 이름 지우기</button>' : ''}<span class="status" id="aMsg"></span></div>
   </div>`;
 }
 function bindAdmin(el) {
-  const m = () => el.querySelector('#rMsg');
-  el.querySelector('#rSave').onclick = async () => {
-    const num = v => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
-    const lock = el.querySelector('#rLock').value;
-    const conf = {
-      result: { house: el.querySelector('#rHouse').value || null, senate: el.querySelector('#rSenate').value || null, sSeats: num(el.querySelector('#rS').value), hSeats: num(el.querySelector('#rH').value) },
-      rule: el.querySelector('#rRule').value.slice(0, 60) || DEFAULT_RULE,
-      locked: lock === 'on' ? true : lock === 'off' ? false : null,
-    };
-    m().textContent = '저장하는 중…'; m().className = 'status';
-    try { await commit(d => { d.config = { ...d.config, ...conf }; }, 'config: result/settings'); render(); }
-    catch (e) { m().textContent = '저장하지 못했어요.'; m().className = 'status err'; }
-  };
+  const msg = (t, c) => { const m = el.querySelector('#aMsg'); m.textContent = t; m.className = 'status ' + (c || ''); };
   el.querySelector('#lSave').onclick = async () => {
     const num = v => { const n = parseInt(v, 10); return Number.isFinite(n) && n >= 0 ? n : 0; };
     const calls = {}; RACES.forEach(r => { const v = el.querySelector('#lc_' + r.slug).value; if (v) calls[r.slug] = v; });
     const live = { houseD: num(el.querySelector('#lHD').value), houseR: num(el.querySelector('#lHR').value), senateD: num(el.querySelector('#lSD').value), senateR: num(el.querySelector('#lSR').value), note: el.querySelector('#lNote').value.slice(0, 60), calls, at: Date.now() };
-    const lm = el.querySelector('#lMsg'); lm.textContent = '저장하는 중…'; lm.className = 'status';
-    try { await commit(d => { d.config.live = live; }, 'live: seat update'); render(); }
-    catch (e) { lm.textContent = '저장하지 못했어요.'; lm.className = 'status err'; }
+    const lock = el.querySelector('#rLock').value;
+    msg('저장 중');
+    try { await commit(d => { d.config.live = live; d.config.locked = lock === 'on' ? true : lock === 'off' ? false : null; }, 'admin: update'); render(); }
+    catch (e) { msg('저장하지 못했어요', 'err'); }
   };
   const del = el.querySelector('#rDelBtn');
   if (del) {
     let armed = false;
     del.onclick = async () => {
-      const nm = el.querySelector('#rDel').value;
-      if (!armed) { armed = true; del.textContent = `"${nm}" 정말 지우기`; return; }
-      try { await commit(d => { delete d.picks[nm]; }, `remove: ${nm}`); render(); } catch (e) { m().textContent = '지우지 못했어요.'; m().className = 'status err'; }
+      const x = el.querySelector('#rDel').value;
+      if (!armed) { armed = true; del.textContent = `"${x}" 정말 지우기`; return; }
+      try { await commit(d => { delete d.picks[x]; }, `remove: ${x}`); render(); } catch (e) { msg('지우지 못했어요', 'err'); }
     };
   }
 }
 
 function render() {
-  renderClock();
   const a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
-  renderMine(); renderBoard(); renderLive(); renderRaces();
+  renderClock(); renderLive(); renderMine(); renderBoard();
   if (id) { const n = document.getElementById(id); if (n) { n.focus(); try { if (pos != null) n.setSelectionRange(pos, pos); } catch (e) {} } }
 }
 
 render();
 load();
 loadMarkets();
-setInterval(() => { if (!document.hidden) loadMarkets(); }, 60000);
 setInterval(() => { const a = document.activeElement; if (!S.saving && !document.hidden && !(a && (a.tagName === 'INPUT' || a.tagName === 'SELECT'))) load(); }, 30000);
+setInterval(() => { if (!document.hidden) loadMarkets(); }, 60000);
 setInterval(renderClock, 30000);
 </script>
 </body>
