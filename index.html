@@ -4,41 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>중간선거 커피내기</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Do+Hyeon&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Nunito:wght@600;800&display=swap">
 <style>
 /* Layout: 위 상황판(투표 일정·마감) → 내 예측 + 사무실 집계 2단 → 판세 근거 → 섹터 시나리오 → 출처. 정당색(파랑·빨강)은 정보로만 쓰고, 페이지 강조는 커피색 하나 */
 :root {
-  --bg: #f4f2ee;
+  /* 하얀 종이 + 파스텔 세 가지(분홍·하늘·버터) + 부드러운 갈색 선. 금융 페이지답게 장식은 최소, 모서리와 색으로만 귀여움 */
+  --bg: #fffdfb;
   --surface: #ffffff;
-  --sunk: #ebe8e2;
-  --fg: #1d1c1a;
-  --muted: #6c6862;
-  --line: #ddd8cf;
-  --accent: #8a5a2b;
-  --accent-soft: rgba(138, 90, 43, .12);
-  --dem: #2b5fd9;
-  --dem-soft: rgba(43, 95, 217, .12);
-  --rep: #d0393b;
-  --rep-soft: rgba(208, 57, 59, .12);
-  --ok: #2f8a4c;
-  --display: "Do Hyeon", "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
-  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --sunk: #fbf5f1;
+  --fg: #4a3f3a;
+  --muted: #9a8c85;
+  --line: #efe4dd;
+  --accent: #e8899a;
+  --accent-soft: #fdeef0;
+  --sky: #dcecf9;
+  --butter: #fdf3d3;
+  --dem: #5d8fd8;
+  --dem-soft: #e6effb;
+  --rep: #e47c7c;
+  --rep-soft: #fcebea;
+  --ok: #5fae84;
+  --display: "Jua", "Gowun Dodum", "Apple SD Gothic Neo", sans-serif;
+  --body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "Nunito", "Gowun Dodum", ui-rounded, sans-serif;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #161514; --surface: #201f1d; --sunk: #2a2826; --fg: #eeebe6; --muted: #a39e96; --line: #3a3733;
-    --accent: #d6a06a; --accent-soft: rgba(214, 160, 106, .15);
-    --dem: #6f97ff; --dem-soft: rgba(111, 151, 255, .16); --rep: #ff6d6a; --rep-soft: rgba(255, 109, 106, .16); --ok: #5cc27c;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #161514; --surface: #201f1d; --sunk: #2a2826; --fg: #eeebe6; --muted: #a39e96; --line: #3a3733;
-  --accent: #d6a06a; --accent-soft: rgba(214, 160, 106, .15);
-  --dem: #6f97ff; --dem-soft: rgba(111, 151, 255, .16); --rep: #ff6d6a; --rep-soft: rgba(255, 109, 106, .16); --ok: #5cc27c;
-  color-scheme: dark;
-}
+
 * { box-sizing: border-box; }
 body {
   background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
@@ -238,6 +229,57 @@ a { color: inherit; text-underline-offset: 3px; }
   .panel { padding: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ── 부드러운 파스텔 테마 ── */
+body { letter-spacing: -.01em; }
+.panel { border: 1.5px solid var(--line); border-radius: 22px; box-shadow: 0 2px 0 var(--line); }
+.top h1 { font-size: 46px; letter-spacing: -.02em; }
+.top h1 span { color: var(--accent); }
+h2 { font-size: 27px; }
+.eyebrow { color: var(--accent); letter-spacing: .04em; font-weight: 400; display: inline-flex; align-items: center; gap: 6px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: .7; }
+.clock b { font-weight: 800; font-size: 28px; color: var(--fg); }
+.timeline { border: 1.5px solid var(--line); border-radius: 22px; }
+.tl.past { background: var(--sunk); }
+.tl.now { box-shadow: inset 0 4px 0 var(--accent); background: var(--accent-soft); }
+.tl b { font-weight: 800; }
+.tl.key b { color: var(--accent); }
+.bar, .seatbar, .oddsbar { border-radius: 999px; }
+.bar i, .seatbar i, .oddsbar i { font-family: var(--mono); font-weight: 800; }
+.fact { background: var(--sunk); border-radius: 16px; }
+.fact b { font-family: var(--mono); font-weight: 800; color: var(--fg); }
+.facts4 .fact:nth-child(1) { background: var(--sky); }
+.facts4 .fact:nth-child(2) { background: var(--butter); }
+.facts4 .fact:nth-child(3) { background: var(--accent-soft); }
+.choice button { border-radius: 16px; border-width: 1.5px; }
+.choice button.d[aria-pressed="true"] { background: var(--dem-soft); }
+.choice button.r[aria-pressed="true"] { background: var(--rep-soft); }
+.field input, .field select, .field textarea { border-radius: 14px; background: var(--surface); }
+.btn { border-radius: 999px; background: var(--fg); border-color: var(--fg); font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .01em; }
+.btn.ghost { background: var(--surface); color: var(--fg); border-color: var(--line); }
+.rule { background: var(--butter); border-radius: 16px; }
+.rule b { color: var(--fg); }
+.notice { background: var(--sky); border-radius: 16px; }
+.tally .t { background: var(--sunk); border-radius: 16px; }
+.pill { border-radius: 999px; }
+.board tr.me td { background: var(--accent-soft); }
+.board tr.me td:first-child { border-radius: 12px 0 0 12px; } .board tr.me td:last-child { border-radius: 0 12px 12px 0; }
+.coffee { color: #b9786a; }
+.admin { border-radius: 18px; border-color: var(--line); background: var(--sunk); }
+.case { border-top-width: 6px; }
+.case.d { border-top-color: var(--dem-soft); } .case.r { border-top-color: var(--rep-soft); }
+.case.d h3 { color: var(--dem); } .case.r h3 { color: var(--rep); }
+.lean, .called { border-radius: 999px; }
+.live-links a { border-radius: 999px; border: 1.5px solid var(--line); }
+.live-links a:hover { background: var(--accent-soft); }
+.prob b { font-weight: 800; }
+.headline .dot { background: var(--accent); }
+.sectors th, .races th, .board th { font-weight: 400; }
+#live-sec .live-card:first-child { background: linear-gradient(180deg, var(--dem-soft), var(--surface) 55%); }
+#live-sec .live-card:last-child { background: linear-gradient(180deg, var(--accent-soft), var(--surface) 55%); }
+#liveHead { background: var(--butter); border-color: #f3e6bd; }
+.sources { color: var(--muted); }
+a { text-decoration-color: var(--accent); }
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
