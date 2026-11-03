@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>중간선거 커피내기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Do+Hyeon&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 위 상황판(투표 일정·마감) → 내 예측 + 사무실 집계 2단 → 판세 근거 → 섹터 시나리오 → 출처. 정당색(파랑·빨강)은 정보로만 쓰고, 페이지 강조는 커피색 하나 */
+:root {
+  --bg: #f4f2ee;
+  --surface: #ffffff;
+  --sunk: #ebe8e2;
+  --fg: #1d1c1a;
+  --muted: #6c6862;
+  --line: #ddd8cf;
+  --accent: #8a5a2b;
+  --accent-soft: rgba(138, 90, 43, .12);
+  --dem: #2b5fd9;
+  --dem-soft: rgba(43, 95, 217, .12);
+  --rep: #d0393b;
+  --rep-soft: rgba(208, 57, 59, .12);
+  --ok: #2f8a4c;
+  --display: "Do Hyeon", "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161514; --surface: #201f1d; --sunk: #2a2826; --fg: #eeebe6; --muted: #a39e96; --line: #3a3733;
+    --accent: #d6a06a; --accent-soft: rgba(214, 160, 106, .15);
+    --dem: #6f97ff; --dem-soft: rgba(111, 151, 255, .16); --rep: #ff6d6a; --rep-soft: rgba(255, 109, 106, .16); --ok: #5cc27c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161514; --surface: #201f1d; --sunk: #2a2826; --fg: #eeebe6; --muted: #a39e96; --line: #3a3733;
+  --accent: #d6a06a; --accent-soft: rgba(214, 160, 106, .15);
+  --dem: #6f97ff; --dem-soft: rgba(111, 151, 255, .16); --rep: #ff6d6a; --rep-soft: rgba(255, 109, 106, .16); --ok: #5cc27c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.2; }
+h3 { font-size: 15px; font-weight: 600; }
+p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; color: var(--accent); }
+a { color: inherit; text-underline-offset: 3px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.section { display: flex; flex-direction: column; gap: 12px; }
+.section > header { display: flex; flex-direction: column; gap: 4px; }
+
+/* 상단 */
+.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.top h1 { font-family: var(--display); font-weight: 400; font-size: 44px; line-height: 1.05; }
+.top h1 span { color: var(--accent); }
+.top p { color: var(--muted); max-width: 60ch; }
+.clock { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; }
+.clock b { font-family: var(--mono); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.clock span { font-size: 13px; color: var(--muted); }
+
+.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.tl { padding: 12px 14px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; position: relative; }
+.tl:first-child { border-left: 0; }
+.tl b { font-family: var(--mono); font-weight: 500; font-size: 14px; font-variant-numeric: tabular-nums; }
+.tl span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.tl.past { background: var(--sunk); }
+.tl.past b, .tl.past span { color: var(--muted); }
+.tl.now { box-shadow: inset 0 3px 0 var(--accent); }
+.tl.key b { color: var(--accent); }
+
+/* 숫자 요약 */
+.odds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.chamber { display: flex; flex-direction: column; gap: 12px; }
+.chamber .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.chamber .head h3 { font-family: var(--display); font-weight: 400; font-size: 24px; }
+.chamber .head span { font-size: 13px; color: var(--muted); }
+.meter { display: flex; flex-direction: column; gap: 6px; }
+.meter-row { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 13px; }
+.bar { height: 22px; border-radius: 6px; overflow: hidden; display: flex; background: var(--sunk); }
+.bar i { display: flex; align-items: center; font-style: normal; font-size: 12px; font-weight: 600; color: #fff; padding: 0 8px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bar .d { background: var(--dem); }
+.bar .r { background: var(--rep); justify-content: flex-end; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.fact { background: var(--sunk); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.facts4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.fact b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.fact span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* 참여 */
+.play { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 14px; align-items: start; }
+.pick-q { display: flex; flex-direction: column; gap: 8px; }
+.pick-q label.q { font-weight: 600; font-size: 14px; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice button {
+  font: inherit; font-weight: 600; font-size: 15px; padding: 12px; border-radius: 10px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.choice button small { font-weight: 400; font-size: 12px; color: var(--muted); }
+.choice button.d[aria-pressed="true"] { border-color: var(--dem); background: var(--dem-soft); color: var(--dem); }
+.choice button.r[aria-pressed="true"] { border-color: var(--rep); background: var(--rep-soft); color: var(--rep); }
+.choice button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.choice button:disabled { cursor: not-allowed; opacity: .6; }
+.seats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.field input, .field select, .field textarea {
+  font: inherit; font-size: 15px; color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.btn { font: inherit; font-weight: 600; font-size: 15px; border-radius: 10px; padding: 11px 18px; cursor: pointer; border: 1.5px solid var(--fg); background: var(--fg); color: var(--surface); }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.status { font-size: 13px; min-height: 1.4em; }
+.status.ok { color: var(--ok); }
+.status.err { color: var(--rep); }
+.notice { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; }
+.rule { display: flex; gap: 10px; align-items: center; background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.rule b { color: var(--accent); }
+
+.tally { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tally .t { background: var(--sunk); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.tally .t span { font-size: 12px; color: var(--muted); }
+.tally .bar { height: 26px; }
+
+.board { width: 100%; border-collapse: collapse; font-size: 14px; }
+.board-wrap { overflow-x: auto; }
+.board th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.board td { padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.board tr.me td { background: var(--accent-soft); }
+.board .who { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+.board .who img { width: 24px; height: 24px; border-radius: 50%; flex: none; max-width: none; }
+.board .memo { color: var(--muted); font-size: 13px; max-width: 220px; }
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.d { background: var(--dem-soft); color: var(--dem); }
+.pill.r { background: var(--rep-soft); color: var(--rep); }
+.pill.hit { box-shadow: 0 0 0 1.5px currentColor; }
+.pill.miss { opacity: .35; text-decoration: line-through; }
+.rank { font-family: var(--mono); font-weight: 500; }
+.coffee { color: var(--accent); font-weight: 700; white-space: nowrap; }
+.empty { color: var(--muted); font-size: 14px; padding: 18px 0; text-align: center; }
+
+.admin { border: 1.5px dashed var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.admin .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+
+/* 판세 근거 */
+.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.case { border-top: 4px solid var(--line); }
+.case.d { border-top-color: var(--dem); }
+.case.r { border-top-color: var(--rep); }
+.case h3 { font-size: 16px; }
+.case.d h3 { color: var(--dem); }
+.case.r h3 { color: var(--rep); }
+.case ul, .kr ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.case li, .kr li { line-height: 1.5; }
+
+.races { width: 100%; border-collapse: collapse; font-size: 14px; }
+.races th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.races td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.races td:first-child { font-weight: 600; white-space: nowrap; }
+.lean { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; white-space: nowrap; display: inline-block; }
+.lean.d { background: var(--dem-soft); color: var(--dem); }
+.lean.r { background: var(--rep-soft); color: var(--rep); }
+.lean.t { background: var(--sunk); color: var(--fg); }
+
+.kr { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* 섹터 */
+.sectors { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
+.sectors th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); }
+.sectors td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+.sectors td:first-child { min-width: 150px; }
+.scn { display: flex; flex-direction: column; gap: 4px; }
+.scn b { font-size: 15px; }
+.scn .p { font-size: 12px; color: var(--muted); }
+.swatch { display: inline-flex; gap: 3px; }
+.swatch i { width: 14px; height: 8px; border-radius: 2px; display: inline-block; }
+.up { color: var(--ok); font-weight: 600; }
+.down { color: var(--rep); font-weight: 600; }
+
+.sources { columns: 2; column-gap: 24px; font-size: 13px; color: var(--muted); padding-left: 18px; margin: 0; }
+.sources li { break-inside: avoid; margin-bottom: 4px; }
+.disclaimer { font-size: 12.5px; color: var(--muted); }
+
+@media (max-width: 880px) {
+  .play, .odds, .cases, .kr { grid-template-columns: 1fr; }
+  .timeline { grid-template-columns: 1fr 1fr; }
+  .tl { border-left: 0; border-top: 1px solid var(--line); }
+  .tl:nth-child(-n+2) { border-top: 0; }
+  .tl:nth-child(even) { border-left: 1px solid var(--line); }
+  .sources { columns: 1; }
+}
+@media (max-width: 520px) {
+  .top h1 { font-size: 34px; }
+  .clock { align-items: flex-start; text-align: left; }
+  .facts, .facts4 { grid-template-columns: 1fr 1fr; }
+  .meter-row { grid-template-columns: 84px minmax(0, 1fr); }
+  .admin .grid4 { grid-template-columns: 1fr 1fr; }
+  .panel { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="top">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span class="eyebrow">2026 미국 중간선거 · 사무실 예측 게임</span>
+      <h1>중간선거 <span>커피내기</span></h1>
+      <p>하원·상원 다수당을 누가 가져갈지 찍어 보세요. 판단에 참고할 판세와 미국·한국 시각, 결과별 수혜 섹터를 아래에 정리했어요.</p>
+    </div>
+    <div class="clock">
+      <b id="kst">--:--</b>
+      <span id="phase">한국 시각</span>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <!-- 참여 -->
+  <section class="section" id="play-sec">
+    <header>
+      <span class="eyebrow">찍기</span>
+      <h2>내 예측과 사무실 집계</h2>
+    </header>
+    <div class="play">
+      <div class="panel" id="mine"></div>
+      <div class="panel" id="boardPanel"></div>
+    </div>
+  </section>
+
+  <!-- 숫자 판세 -->
+  <section class="section">
+    <header>
+      <span class="eyebrow">판세 한눈에 · 11월 1~2일 기준</span>
+      <h2>예측시장과 예측기관은 이렇게 봐요</h2>
+      <p class="muted small">확률은 '이길 가능성'이지 득표율이 아니에요. 70%라도 10번 중 3번은 반대로 나와요.</p>
+    </header>
+    <div class="odds">
+      <div class="panel chamber">
+        <div class="head"><h3>하원 435석</h3><span>과반 218석 · 현재 공화당 근소 다수</span></div>
+        <div class="meter">
+          <div class="meter-row"><span>Polymarket</span><div class="bar"><i class="d" style="width:95%">민주 95%</i><i class="r" style="width:5%"></i></div></div>
+          <div class="meter-row"><span>Kalshi</span><div class="bar"><i class="d" style="width:93.3%">민주 93%</i><i class="r" style="width:6.7%"></i></div></div>
+          <div class="meter-row"><span>Decision Desk HQ</span><div class="bar"><i class="d" style="width:83%">민주 83%</i><i class="r" style="width:17%">17%</i></div></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><b>220석</b><span>쿡 리포트: 민주 우세 쪽으로 분류된 의석 (경합 17석)</span></div>
+          <div class="fact"><b>225석</b><span>사바토 크리스털볼: 민주 우세 쪽 의석</span></div>
+          <div class="fact"><b>최대 240석</b><span>쿡 리포트가 본 민주당의 좋은 밤 시나리오</span></div>
+        </div>
+      </div>
+      <div class="panel chamber">
+        <div class="head"><h3>상원 100석</h3><span>현재 공화 53 : 민주 47 · 동수면 부통령(공화)이 결정</span></div>
+        <div class="meter">
+          <div class="meter-row"><span>Polymarket</span><div class="bar"><i class="d" style="width:72%">민주 72%</i><i class="r" style="width:28%">28%</i></div></div>
+          <div class="meter-row"><span>Kalshi</span><div class="bar"><i class="d" style="width:71%">민주 71%</i><i class="r" style="width:29%">29%</i></div></div>
+          <div class="meter-row"><span>Decision Desk HQ</span><div class="bar"><i class="d" style="width:63%">민주 63%</i><i class="r" style="width:37%">37%</i></div></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><b>순증 4석</b><span>민주당이 51석 과반을 만들려면 공화 의석 4개를 뺏고 기존 의석도 지켜야 해요</span></div>
+          <div class="fact"><b>경합 7곳 중 4곳</b><span>쿡 리포트 기준 민주당이 가져와야 하는 경합 수</span></div>
+          <div class="fact"><b>오차범위</b><span>경향신문: 7대 격전지 모두 오차범위 안 초접전</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="facts facts4" id="extraFacts">
+      <div class="fact"><b>민주 +8.6%p</b><span>전국 정당 지지 여론조사 평균 (51.7 : 43.1, 11/2)</span></div>
+      <div class="fact"><b>5,300만 명+</b><span>사전투표자. 2022년 4,600만 명보다 많아요. 민주 지지자 43%, 공화 31%, 무당층 25%</span></div>
+      <div class="fact"><b>71 · 24 · 5%</b><span>Polymarket 조합: 민주 양원 · 하원 민주+상원 공화 · 공화 양원</span></div>
+      <div class="fact"><b>63 · 28 · 8%</b><span>대신증권이 본 같은 세 시나리오 확률</span></div>
+    </div>
+  </section>
+
+  <!-- 양쪽 근거 -->
+  <section class="section">
+    <header>
+      <span class="eyebrow">판단 근거</span>
+      <h2>양쪽 논리를 다 보고 찍으세요</h2>
+      <p class="muted small">각 진영과 분석가들이 내세우는 근거를 모았어요. 어느 쪽이 맞다는 판단은 하지 않았어요.</p>
+    </header>
+    <div class="cases">
+      <div class="panel case d">
+        <h3>민주당이 이긴다고 보는 근거</h3>
+        <ul>
+          <li><b>집권당 중간선거 징크스.</b> 대통령 소속 정당은 중간선거에서 하원 의석을 잃는 경우가 대부분이에요.</li>
+          <li><b>경제 불만.</b> 관세와 물가, 이란 전쟁 여파로 오른 난방유·연료·비료 가격이 공화당에 부담으로 꼽혀요.</li>
+          <li><b>큰 여론조사 격차.</b> 전국 정당 지지가 민주 +8.6%p로 2017년 이후 가장 큰 수준이에요. Economist/YouGov는 투표 의향층에서 민주 +11%p.</li>
+          <li><b>사전투표 열기.</b> 5,300만 명을 넘었고 민주 지지자 비중이 더 높아요.</li>
+          <li><b>공화 텃밭 균열.</b> 메인·텍사스·오하이오에서 민주 후보가 앞서고, 1932년 이후 민주 상원의원이 없던 캔자스도 접전이에요.</li>
+          <li><b>예측시장 흐름.</b> Kalshi 상원 민주 확률이 3월 44% → 9월 57% → 11월 71%로 꾸준히 올랐어요.</li>
+        </ul>
+      </div>
+      <div class="panel case r">
+        <h3>공화당이 지킨다고 보는 근거</h3>
+        <ul>
+          <li><b>상원 지도가 공화에 유리.</b> 민주당은 기존 의석을 다 지키면서 공화 우세 지역에서 4곳을 더 이겨야 해요. 하나만 놓쳐도 과반이 안 돼요.</li>
+          <li><b>격전지 전부 오차범위.</b> 7곳 모두 초접전이라 여론조사가 조금만 빗나가도 결과가 뒤집혀요.</li>
+          <li><b>여론조사 오차의 전례.</b> 대신증권은 여론조사가 공화 표를 과소평가할 경우 상원이 사실상 반반이 될 수 있다고 경고했어요.</li>
+          <li><b>민주당 내분.</b> 미시간에서 경선에 진 스티븐스 의원이 공화 로저스 후보를 공개 지지했어요. 민주가 지켜야 하는 유일한 경합 의석이에요.</li>
+          <li><b>버티는 지역.</b> 아이오와·사우스캐롤라이나는 예측시장에서 공화 우세로 남아 있어요.</li>
+          <li><b>좋은 밤 시나리오.</b> 폭스뉴스 분석은 공화가 상원을 최대 52석까지 지킬 수 있다고 봤고, 트럼프 대통령은 양원 모두 지킨다고 장담하며 28차례 지원 유세를 했어요.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>상원 승부처 8곳</h3>
+      <div class="board-wrap">
+        <table class="races">
+          <thead><tr><th>주</th><th>현재 의석</th><th>예측시장 기울기</th><th>포인트</th></tr></thead>
+          <tbody>
+            <tr><td>메인</td><td>공화</td><td><span class="lean d">민주 우세</span></td><td>중도파 콜린스 의원이 관세·난방유 가격 여파로 고전. 민주 탈환 가능성 가장 높게 평가</td></tr>
+            <tr><td>텍사스</td><td>공화</td><td><span class="lean d">민주 우세</span></td><td>민주 탈라리코 후보가 여론조사에서 꾸준히 앞섬. 공화 팩스턴 후보는 모금에서도 열세</td></tr>
+            <tr><td>오하이오</td><td>공화</td><td><span class="lean d">민주 우세</span></td><td>밴스 부통령의 기반 지역. 암호화폐 업계 슈퍼PAC이 민주 셰로드 브라운 후보 낙선에 5,500만 달러 투입</td></tr>
+            <tr><td>미시간</td><td>민주</td><td><span class="lean d">민주 우세</span></td><td>민주 엘사예드 후보가 약 5%p 앞서지만 당내 분열이 변수</td></tr>
+            <tr><td>캔자스</td><td>공화</td><td><span class="lean t">접전</span></td><td>예측시장에서 가장 크게 움직인 곳. 물가와 쇠고기 수입 확대에 대한 농민 불만</td></tr>
+            <tr><td>알래스카</td><td>공화</td><td><span class="lean t">접전</span></td><td>동명이인 후보 논란. 결과 확정이 늦고, 다수당을 가를 경우 공방이 길어질 수 있음</td></tr>
+            <tr><td>아이오와</td><td>공화</td><td><span class="lean r">공화 우세</span></td><td>격전지 중 공화가 지킬 가능성이 가장 높다는 평가</td></tr>
+            <tr><td>사우스캐롤라이나</td><td>공화</td><td><span class="lean r">공화 우세</span></td><td>그레이엄 의원 지역. 예측시장에서 공화 우세 유지</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted small">예측시장 기울기는 Kalshi·Polymarket 기준(11/1~2). 민주당이 수성해야 하는 미네소타·뉴햄프셔는 민주 약우세로 분류돼요.</p>
+    </div>
+  </section>
+
+  <!-- 미국 vs 한국 시각 -->
+  <section class="section">
+    <header>
+      <span class="eyebrow">미국 · 한국 시각</span>
+      <h2>시장은 무엇을 보고 있나</h2>
+    </header>
+    <div class="kr">
+      <div class="panel">
+        <h3>미국 쪽 분석</h3>
+        <ul>
+          <li><b>업종 차별화가 핵심.</b> 월가는 이번 선거가 지수 전체보다 업종 간 희비를 키울 것으로 봐요.</li>
+          <li><b>분점 의회면 '큰 법안 없음'.</b> 찰스 슈왑은 대형 입법은 어렵고 의회 감시가 늘며, 예산 처리와 2027년 부채한도 협상이 시장 변수라고 봤어요.</li>
+          <li><b>민주 양원이면 감시 강화.</b> 행정부 견제, 인사 인준과 규제 정책을 둘러싼 대립이 커질 거라는 분석이에요.</li>
+          <li><b>선거 후 주가는 대체로 올랐어요.</b> 1974년 이후 중간선거 6개월 뒤 S&P500은 13번 모두 상승, 평균 +12.4%였어요(슈왑 집계).</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>한국 쪽 분석</h3>
+        <ul>
+          <li><b>"승부처는 상원."</b> 한국 언론은 하원 민주 탈환은 사실상 확실, 상원은 접전으로 보는 분위기예요.</li>
+          <li><b>코스피는 민주 쪽이 유리하다는 시각.</b> 대신증권은 민주 하원이 트럼프 재정 확장을 견제해 미국 금리와 달러가 안정될 수 있다고 봤어요. 4분기 코스피 상단 6,700.</li>
+          <li><b>공화 양원이면 금리·달러 상승 위험.</b> 같은 분석에서 미 10년물 금리 0.15~0.3%p 상승, 원·달러 1,360~1,400원, 코스피 하단 4,950까지 열어 뒀어요.</li>
+          <li><b>불확실성 해소가 더 중요.</b> 1950년 이후 중간선거 12개월 뒤 S&P500은 모두 올랐고(평균 +15.1%), 코스피는 9번 중 6번 올랐어요.</li>
+          <li><b>이미 움직인 종목.</b> 한국투자증권은 민주 상원 확률이 50%를 넘으면서 데이터센터 관련주가 약세를 보였다고 짚었어요.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 섹터 -->
+  <section class="section">
+    <header>
+      <span class="eyebrow">결과별 수혜 · 부담 섹터</span>
+      <h2>누가 이기면 어디가 움직이나</h2>
+      <p class="muted small">증권사·외신이 꼽은 내용을 시나리오별로 모았어요. 투자 권유가 아니라 참고용이에요.</p>
+    </header>
+    <div class="panel" style="padding:8px 12px">
+      <div class="board-wrap">
+        <table class="sectors">
+          <thead><tr><th>시나리오</th><th>미국 섹터</th><th>한국 섹터 · 종목 예시</th><th>왜</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="scn"><span class="swatch"><i style="background:var(--dem)"></i><i style="background:var(--dem)"></i></span><b>민주 양원</b><span class="p">Polymarket 71% · 대신 63%</span></div></td>
+              <td><span class="up">▲</span> 병원·일부 건강보험, 태양광·풍력<br><span class="down">▼</span> AI 데이터센터, 금융, 암호화폐, 방산</td>
+              <td><span class="up">▲</span> 전력기기(HD현대일렉트릭, 효성중공업, LS일렉트릭), 헬스케어, 태양광·풍력, 증권·인터넷·2차전지<br><span class="down">▼</span> 데이터센터 관련주</td>
+              <td>오바마케어 보조금 복원·메디케이드 삭감 철회 기대, 재생에너지 세액공제 복원 논의, 데이터센터 전력·환경 규제 가능성. 빅테크 자체 변전소 수요로 초고압 전력기기는 기회</td>
+            </tr>
+            <tr>
+              <td><div class="scn"><span class="swatch"><i style="background:var(--dem)"></i><i style="background:var(--rep)"></i></span><b>하원 민주 · 상원 공화</b><span class="p">Polymarket 24% · 대신 28%</span></div></td>
+              <td>정책 급변 제한. 예산·부채한도 협상 때 변동성</td>
+              <td><span class="up">▲</span> ESS(에너지저장장치)</td>
+              <td>양당이 함께 지지하는 정책만 추진력. ESS 투자세액공제는 감세법 이후에도 유지 전망</td>
+            </tr>
+            <tr>
+              <td><div class="scn"><span class="swatch"><i style="background:var(--rep)"></i><i style="background:var(--rep)"></i></span><b>공화 양원</b><span class="p">Polymarket 5% · 대신 8%</span></div></td>
+              <td><span class="up">▲</span> 방산(JP모건: 록히드마틴, 노스롭그루먼, L3해리스), 금융·암호화폐(규제 완화)</td>
+              <td><span class="up">▲</span> 방산(한화오션 함정 MRO), 원전(두산에너빌리티 등 SMR), 보험<br><span class="down">▼</span> 금리·달러 상승 시 성장주 전반</td>
+              <td>국방예산 확대, 원전 규제 완화, 암호화폐 시장구조법(클래리티법) 진전 기대</td>
+            </tr>
+            <tr>
+              <td><div class="scn"><span class="swatch"><i style="background:var(--muted)"></i><i style="background:var(--muted)"></i></span><b>결과와 무관하게</b><span class="p">증권사 공통 의견</span></div></td>
+              <td>선거 불확실성 해소 자체가 호재라는 시각</td>
+              <td><span class="up">▲</span> 반도체, 조선, 바이오(대신) · 조선, 반도체, 은행, 헬스케어, 호텔·레저(신한)<br><span class="down">▼</span> 건설, 에너지, 비철금속(신한)</td>
+              <td>실적 개선이 정책 변화와 상관없이 이어질 업종 위주. 선거 후 이란 공습 재개 가능성은 위험 요인</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <header><span class="eyebrow">출처</span></header>
+    <ol class="sources">
+      <li><a href="https://news.kalshi.com/p/2026-midterm-predictions" target="_blank" rel="noopener">Kalshi News, 2026 Midterm Predictions (11/1)</a></li>
+      <li><a href="https://www.wionews.com/world/us-midterms-2026-prediction-markets-democrats-senate-house-1793558951403" target="_blank" rel="noopener">WION, 예측시장 상원 71%·하원 95% (11/2)</a></li>
+      <li><a href="https://uspollingdata.com/polls/generic-ballot/" target="_blank" rel="noopener">US Polling Data, Generic Ballot (11/2)</a></li>
+      <li><a href="https://www.foxnews.com/politics/everything-know-house-senate-control-ballot-measures-2026-election-day-poll-closing" target="_blank" rel="noopener">Fox News, House·Senate control and poll closings</a></li>
+      <li><a href="https://www.schwab.com/learn/story/what-2026-midterms-could-mean-markets" target="_blank" rel="noopener">Charles Schwab, What the 2026 Midterms Could Mean for the Markets</a></li>
+      <li><a href="https://www.khan.co.kr/article/202611022112005/" target="_blank" rel="noopener">경향신문, 민주당 7대 격전지 중 최소 5곳 이겨야 상원 탈환 (11/2)</a></li>
+      <li><a href="https://www.joongangenews.com/news/articleView.html?idxno=560291" target="_blank" rel="noopener">중앙이코노미뉴스, 민주 하원 83%·상원 63% 전망</a></li>
+      <li><a href="https://www.hankyung.com/article/2026103175746" target="_blank" rel="noopener">한국경제, 누가 이겨야 코스피에 유리할까 (대신·신한 분석)</a></li>
+      <li><a href="https://www.imaeil.com/page/view/2026102700343950481" target="_blank" rel="noopener">매일신문, 결과 따라 수혜 업종도 달라진다 (한국투자증권)</a></li>
+      <li><a href="https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=01764646645641784" target="_blank" rel="noopener">이데일리, 월가가 꼽은 수혜·피해 업종 (11/2)</a></li>
+    </ol>
+    <p class="disclaimer">수치는 11월 1~2일 기사·예측시장 기준이며 투표 당일 계속 바뀌어요. 섹터 정리는 각 증권사·외신의 의견을 옮긴 것으로 투자 권유가 아니에요. 예측시장 확률은 참가자들의 베팅 가격이고 공식 전망이 아니에요.</p>
+  </section>
+</div>
+
+<script>
+// ───────── 저장소 설정 ─────────
+const REPO = { owner: 'venturejs', name: 'midterm-coffee', path: 'votes.json', branch: 'main' };
+const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}`;
+
+// 공유 링크의 #k=… 에서 쓰기 키를 받아 이 브라우저에 보관하고 주소창에서는 지움
+const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+(function takeKey() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('k')) LS.set('mc_key', h.get('k'));
+  if (h.has('admin')) LS.set('mc_admin', '1');
+  if (h.get('k') || h.has('admin')) history.replaceState(null, '', location.pathname + location.search);
+})();
+const KEY = LS.get('mc_key');
+const IS_ADMIN = LS.get('mc_admin') === '1';
+
+// ───────── 일정 (한국 시각) ─────────
+const T = s => Date.parse(s);
+const DEADLINE = T('2026-11-03T23:00:00Z');          // 11/4(수) 08:00 KST
+const EVENTS = [
+  { at: T('2026-11-03T11:00:00Z'), t: '11/3(화) 20:00', d: '동부부터 투표 시작' },
+  { at: DEADLINE, t: '11/4(수) 08:00', d: '첫 투표 마감 · 커피내기 마감', key: true },
+  { at: T('2026-11-04T00:00:00Z'), t: '11/4(수) 09:00', d: '동부 주요 주 마감, 개표 시작' },
+  { at: T('2026-11-04T06:00:00Z'), t: '11/4(수) 15:00', d: '알래스카 마감, 투표 종료' },
+  { at: T('2026-11-05T00:00:00Z'), t: '11/5(목)~', d: '접전 의석은 확정까지 며칠 걸릴 수 있어요' },
+];
+const kstFmt = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+const fmtLeft = ms => { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h}시간 ${m % 60}분` : `${m}분`; };
+
+// ───────── 상태 ─────────
+const DEFAULT_RULE = '꼴찌가 1등에게 커피 사기';
+const S = {
+  mode: 'loading', data: { config: {}, picks: {} }, sha: null,
+  draft: { name: LS.get('mc_name') || '', house: null, senate: null, hSeats: '', sSeats: '', memo: '' },
+  draftTouched: false, saving: false, msg: '', msgType: '', updated: null,
+};
+const cfg = () => S.data.config || {};
+function isLocked() {
+  const c = cfg();
+  if (c.locked === true) return true;
+  if (c.locked === false) return false;
+  return Date.now() >= DEADLINE;
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const P = v => v === 'D' ? '<span class="pill d">민주</span>' : v === 'R' ? '<span class="pill r">공화</span>' : '<span class="muted">-</span>';
+
+// ───────── GitHub 읽기·쓰기 ─────────
+const b64enc = str => { const bytes = new TextEncoder().encode(str); let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+const b64dec = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, '')), c => c.charCodeAt(0)));
+const headers = () => KEY ? { Authorization: `Bearer ${KEY}`, Accept: 'application/vnd.github+json' } : { Accept: 'application/vnd.github+json' };
+
+async function load() {
+  try {
+    let json, sha = null;
+    if (KEY) {
+      const r = await fetch(`${API}?ref=${REPO.branch}&t=${Date.now()}`, { headers: headers(), cache: 'no-store' });
+      if (!r.ok) throw new Error('read ' + r.status);
+      const j = await r.json(); sha = j.sha; json = JSON.parse(b64dec(j.content));
+    } else {
+      const r = await fetch(`https://raw.githubusercontent.com/${REPO.owner}/${REPO.name}/${REPO.branch}/${REPO.path}?t=${Date.now()}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error('raw ' + r.status);
+      json = await r.json();
+    }
+    S.data = { config: json.config || {}, picks: json.picks || {} }; S.sha = sha;
+    S.mode = 'live'; S.updated = Date.now();
+    const mine = S.data.picks[S.draft.name.trim()];
+    if (mine && !S.draftTouched) Object.assign(S.draft, { house: mine.house, senate: mine.senate, hSeats: mine.hSeats ?? '', sSeats: mine.sSeats ?? '', memo: mine.memo || '' });
+  } catch (e) {
+    if (S.mode === 'loading') S.mode = 'error';
+  }
+  render();
+}
+
+// 최신 파일을 읽고 → 내 변경을 얹어서 → 저장. 동시에 저장해 충돌하면 다시 시도
+async function commit(mutate, message) {
+  for (let i = 0; i < 4; i++) {
+    const r = await fetch(`${API}?ref=${REPO.branch}&t=${Date.now()}`, { headers: headers(), cache: 'no-store' });
+    if (!r.ok) throw { code: r.status };
+    const j = await r.json();
+    const data = JSON.parse(b64dec(j.content));
+    data.config = data.config || {}; data.picks = data.picks || {};
+    mutate(data);
+    const put = await fetch(API, {
+      method: 'PUT', headers: { ...headers(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, content: b64enc(JSON.stringify(data, null, 2) + '\n'), sha: j.sha, branch: REPO.branch }),
+    });
+    if (put.ok) { S.data = data; S.sha = (await put.json()).content.sha; S.updated = Date.now(); return; }
+    if (put.status !== 409 && put.status !== 422) throw { code: put.status };
+    await new Promise(res => setTimeout(res, 400 + Math.random() * 600));
+  }
+  throw { code: 'conflict' };
+}
+
+// ───────── 점수 ─────────
+function score(p, res) {
+  let pts = 0;
+  if (res.house && p.house === res.house) pts++;
+  if (res.senate && p.senate === res.senate) pts++;
+  const sd = res.sSeats != null && p.sSeats != null ? Math.abs(p.sSeats - res.sSeats) : 999;
+  const hd = res.hSeats != null && p.hSeats != null ? Math.abs(p.hSeats - res.hSeats) : 999;
+  return { pts, sd, hd };
+}
+function ranked() {
+  const res = cfg().result || {};
+  const rows = Object.entries(S.data.picks).filter(([, p]) => p && (p.house === 'D' || p.house === 'R')).map(([name, p]) => ({ name, p, s: score(p, res) }));
+  const hasRes = !!(res.house || res.senate);
+  if (hasRes) rows.sort((a, b) => b.s.pts - a.s.pts || a.s.sd - b.s.sd || a.s.hd - b.s.hd || (a.p.at || 0) - (b.p.at || 0));
+  else rows.sort((a, b) => (a.p.at || 0) - (b.p.at || 0));
+  let rank = 0, prev = null;
+  rows.forEach((r, i) => { const k = `${r.s.pts}|${r.s.sd}|${r.s.hd}`; if (k !== prev) rank = i + 1; r.rank = rank; prev = k; });
+  return rows;
+}
+
+// ───────── 화면 ─────────
+function renderClock() {
+  const now = Date.now();
+  document.getElementById('kst').textContent = kstFmt.format(now);
+  document.getElementById('phase').textContent = cfg().result?.house ? '결과 발표됨' : isLocked() ? '찍기 마감 · 개표 기다리는 중' : `찍기 마감까지 ${fmtLeft(DEADLINE - now)}`;
+  let cur = -1; EVENTS.forEach((e, i) => { if (now >= e.at) cur = i; });
+  document.getElementById('timeline').innerHTML = EVENTS.map((e, i) =>
+    `<div class="tl ${i < cur ? 'past' : ''} ${i === cur ? 'now' : ''} ${e.key ? 'key' : ''}"><b>${e.t}</b><span>${e.d}</span></div>`).join('');
+}
+
+function renderMine() {
+  const el = document.getElementById('mine');
+  if (S.mode === 'loading') { el.innerHTML = '<h3>내 예측</h3><p class="muted">불러오는 중…</p>'; return; }
+  if (!KEY) {
+    el.innerHTML = `<h3>내 예측</h3><div class="notice">투표하려면 진행자가 공유한 <b>참여 링크</b>로 들어와 주세요. 이 주소로는 결과와 판세만 볼 수 있어요.</div>`;
+    return;
+  }
+  const locked = isLocked(), d = S.draft, mine = S.data.picks[d.name.trim()];
+  const dis = locked || S.saving ? 'disabled' : '';
+  const btn = (k, v, label, sub) => `<button type="button" class="${v.toLowerCase()}" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}" ${dis}>${label}<small>${sub}</small></button>`;
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+      <h3>내 예측</h3>
+      <span class="small muted">${mine ? `저장됨 · ${kstFmt.format(mine.at || Date.now())}` : '아직 안 찍었어요'}</span>
+    </div>
+    ${locked ? '<div class="notice">찍기가 마감됐어요. 저장된 예측으로 승부해요.</div>' : ''}
+    <label class="field">이름<input id="name" type="text" maxlength="12" placeholder="예: 김민수" value="${esc(d.name)}" autocomplete="off" ${dis}></label>
+    <div class="pick-q"><label class="q">하원 다수당은?</label><div class="choice">${btn('house', 'D', '민주당', '218석 이상')}${btn('house', 'R', '공화당', '수성')}</div></div>
+    <div class="pick-q"><label class="q">상원 다수당은?</label><div class="choice">${btn('senate', 'D', '민주당', '51석 이상')}${btn('senate', 'R', '공화당', '50석 이상')}</div></div>
+    <div class="pick-q">
+      <label class="q">동점 대비 의석 예상 <span class="muted small" style="font-weight:400">(선택)</span></label>
+      <div class="seats">
+        <label class="field">민주당 상원 의석<input id="sSeats" type="number" inputmode="numeric" min="40" max="60" placeholder="예: 51" value="${esc(d.sSeats)}" ${dis}></label>
+        <label class="field">민주당 하원 의석<input id="hSeats" type="number" inputmode="numeric" min="180" max="270" placeholder="예: 228" value="${esc(d.hSeats)}" ${dis}></label>
+      </div>
+    </div>
+    <label class="field">한마디 <input id="memo" type="text" maxlength="40" placeholder="예: 텍사스가 뒤집힌다" value="${esc(d.memo)}" ${dis}></label>
+    <button class="btn" id="save" ${locked || S.saving || !d.house || !d.senate || !d.name.trim() ? 'disabled' : ''}>${mine ? '예측 수정하기' : '이걸로 찍기'}</button>
+    <p class="status ${S.msgType}">${esc(S.msg)}</p>
+    <p class="small muted">같은 이름으로 다시 찍으면 수정돼요. 마감은 11/4(수) 오전 8시예요.</p>`;
+  el.querySelectorAll('.choice button').forEach(b => b.onclick = () => { S.draft[b.dataset.k] = b.dataset.v; S.draftTouched = true; S.msg = ''; renderMine(); });
+  ['sSeats', 'hSeats', 'memo'].forEach(id => { const i = el.querySelector('#' + id); if (i) i.oninput = () => { S.draft[id] = i.value; S.draftTouched = true; }; });
+  const n = el.querySelector('#name');
+  if (n) {
+    n.oninput = () => { S.draft.name = n.value; const s = el.querySelector('#save'); if (s) s.disabled = isLocked() || S.saving || !S.draft.house || !S.draft.senate || !n.value.trim(); };
+    n.onchange = () => {
+      LS.set('mc_name', n.value.trim());
+      const p = S.data.picks[n.value.trim()];
+      if (p) Object.assign(S.draft, { house: p.house, senate: p.senate, hSeats: p.hSeats ?? '', sSeats: p.sSeats ?? '', memo: p.memo || '' });
+      renderMine();
+    };
+  }
+  const s = el.querySelector('#save'); if (s) s.onclick = savePick;
+}
+
+async function savePick() {
+  const d = S.draft, name = d.name.trim().slice(0, 12);
+  if (!name) return;
+  const num = (v, lo, hi) => { const n = parseInt(v, 10); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
+  const pick = { house: d.house, senate: d.senate, hSeats: num(d.hSeats, 150, 300), sSeats: num(d.sSeats, 35, 65), memo: String(d.memo || '').slice(0, 40), at: Date.now() };
+  LS.set('mc_name', name);
+  S.saving = true; S.msg = '저장하는 중…'; S.msgType = ''; renderMine();
+  try {
+    await commit(data => {
+      if (!(data.config.locked === false) && (data.config.locked === true || Date.now() >= DEADLINE)) throw { code: 'locked' };
+      data.picks[name] = pick;
+    }, `vote: ${name}`);
+    S.draftTouched = false; S.msg = '저장했어요.'; S.msgType = 'ok';
+  } catch (e) {
+    S.msg = e.code === 'locked' ? '찍기가 마감됐어요.'
+      : e.code === 401 || e.code === 403 || e.code === 404 ? '저장 권한이 없어요. 참여 링크가 만료됐을 수 있으니 진행자에게 새 링크를 받아 주세요.'
+      : '저장하지 못했어요. 잠시 후 다시 눌러 주세요.';
+    S.msgType = 'err';
+  }
+  S.saving = false; render();
+}
+
+function renderBoard() {
+  const el = document.getElementById('boardPanel');
+  if (S.mode === 'loading') { el.innerHTML = '<h3>사무실 집계</h3><p class="muted">불러오는 중…</p>'; return; }
+  if (S.mode === 'error') { el.innerHTML = '<h3>사무실 집계</h3><p class="empty">투표 현황을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</p>'; return; }
+  const rows = ranked(), res = cfg().result || {}, hasRes = !!(res.house || res.senate), n = rows.length;
+  const me = S.draft.name.trim();
+  const cnt = (k, v) => rows.filter(r => r.p[k] === v).length;
+  const bar = k => { const d = cnt(k, 'D'), r = cnt(k, 'R'), t = d + r || 1; return `<div class="bar"><i class="d" style="width:${d / t * 100}%">${d ? `민주 ${d}` : ''}</i><i class="r" style="width:${r / t * 100}%">${r ? `공화 ${r}` : ''}</i></div>`; };
+  const lastRank = n ? rows[n - 1].rank : 0;
+  let table;
+  if (!n) table = '<p class="empty">아직 아무도 안 찍었어요. 첫 번째로 찍어 보세요.</p>';
+  else {
+    const head = hasRes ? '<tr><th>순위</th><th>이름</th><th>하원</th><th>상원</th><th>상원·하원 의석</th><th>점수</th></tr>'
+                        : '<tr><th>이름</th><th>하원</th><th>상원</th><th>상원·하원 의석</th><th>한마디</th></tr>';
+    const body = rows.map(r => {
+      const isMe = r.name === me;
+      const cell = k => { const v = r.p[k], cls = res[k] ? (v === res[k] ? ' hit' : ' miss') : ''; return `<span class="pill ${v.toLowerCase()}${cls}">${v === 'D' ? '민주' : '공화'}</span>`; };
+      const who = `<div class="who"><span>${esc(r.name)}${isMe ? ' <span class="muted small">(나)</span>' : ''}</span></div>`;
+      const seats = `<span class="num">${r.p.sSeats ?? '-'} · ${r.p.hSeats ?? '-'}</span>`;
+      if (hasRes) {
+        const loser = r.rank === lastRank && n > 1;
+        return `<tr class="${isMe ? 'me' : ''}"><td class="rank">${r.rank}</td><td>${who}</td><td>${cell('house')}</td><td>${cell('senate')}</td><td>${seats}</td><td class="num"><b>${r.s.pts}</b>점${loser ? ' <span class="coffee">☕ 당번</span>' : ''}</td></tr>`;
+      }
+      return `<tr class="${isMe ? 'me' : ''}"><td>${who}</td><td>${cell('house')}</td><td>${cell('senate')}</td><td>${seats}</td><td class="memo">${esc(r.p.memo || '')}</td></tr>`;
+    }).join('');
+    table = `<div class="board-wrap"><table class="board"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  }
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+      <h3>사무실 집계 <span class="muted num" style="font-weight:400">${n}명 참여</span></h3>
+      ${hasRes ? `<span class="small">결과: 하원 ${P(res.house)} 상원 ${P(res.senate)}</span>` : `<span class="small muted">${S.updated ? `${kstFmt.format(S.updated)} 갱신` : ''}</span>`}
+    </div>
+    <div class="rule">☕ <span>벌칙: <b>${esc(cfg().rule || DEFAULT_RULE)}</b></span></div>
+    <div class="tally"><div class="t"><span>하원 예측 분포</span>${bar('house')}</div><div class="t"><span>상원 예측 분포</span>${bar('senate')}</div></div>
+    ${table}
+    <p class="small muted">점수: 하원·상원 다수당을 맞히면 각 1점. 동점이면 민주당 상원 의석 예상이 실제와 가까운 사람, 그다음 하원 의석 예상이 가까운 사람이 앞서요. 30초마다 자동 갱신돼요.</p>
+    ${IS_ADMIN && KEY ? adminHtml() : ''}`;
+  if (IS_ADMIN && KEY) bindAdmin(el);
+}
+
+function adminHtml() {
+  const r = cfg().result || {}, c = cfg();
+  const sel = (id, v) => `<select id="${id}"><option value="">미정</option><option value="D" ${v === 'D' ? 'selected' : ''}>민주</option><option value="R" ${v === 'R' ? 'selected' : ''}>공화</option></select>`;
+  const lockVal = c.locked === true ? 'on' : c.locked === false ? 'off' : 'auto';
+  const names = Object.keys(S.data.picks);
+  return `<div class="admin">
+    <h3>진행자 도구</h3>
+    <div class="grid4">
+      <label class="field">하원 결과${sel('rHouse', r.house)}</label>
+      <label class="field">상원 결과${sel('rSenate', r.senate)}</label>
+      <label class="field">민주 상원 의석<input id="rS" type="number" inputmode="numeric" value="${r.sSeats ?? ''}"></label>
+      <label class="field">민주 하원 의석<input id="rH" type="number" inputmode="numeric" value="${r.hSeats ?? ''}"></label>
+    </div>
+    <div class="grid4" style="grid-template-columns:2fr 1fr">
+      <label class="field">벌칙 문구<input id="rRule" type="text" maxlength="60" value="${esc(c.rule || DEFAULT_RULE)}"></label>
+      <label class="field">찍기 마감<select id="rLock"><option value="auto" ${lockVal === 'auto' ? 'selected' : ''}>자동 (11/4 08:00)</option><option value="on" ${lockVal === 'on' ? 'selected' : ''}>지금 마감</option><option value="off" ${lockVal === 'off' ? 'selected' : ''}>계속 열기</option></select></label>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="rSave">결과·설정 저장</button><span class="status" id="rMsg"></span></div>
+    ${names.length ? `<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap"><label class="field" style="flex:1;min-width:140px">잘못 들어간 이름 지우기<select id="rDel">${names.map(nm => `<option>${esc(nm)}</option>`).join('')}</select></label><button class="btn ghost" id="rDelBtn">지우기</button></div>` : ''}
+    <p class="small muted">공식 결과는 AP 등 언론의 다수당 확정 발표를 기준으로 입력하세요. 상원 50:50이면 부통령이 공화당이라 공화 다수예요.</p>
+  </div>`;
+}
+function bindAdmin(el) {
+  const m = () => el.querySelector('#rMsg');
+  el.querySelector('#rSave').onclick = async () => {
+    const num = v => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
+    const lock = el.querySelector('#rLock').value;
+    const conf = {
+      result: { house: el.querySelector('#rHouse').value || null, senate: el.querySelector('#rSenate').value || null, sSeats: num(el.querySelector('#rS').value), hSeats: num(el.querySelector('#rH').value) },
+      rule: el.querySelector('#rRule').value.slice(0, 60) || DEFAULT_RULE,
+      locked: lock === 'on' ? true : lock === 'off' ? false : null,
+    };
+    m().textContent = '저장하는 중…'; m().className = 'status';
+    try { await commit(d => { d.config = conf; }, 'config: result/settings'); render(); }
+    catch (e) { m().textContent = '저장하지 못했어요.'; m().className = 'status err'; }
+  };
+  const del = el.querySelector('#rDelBtn');
+  if (del) {
+    let armed = false;
+    del.onclick = async () => {
+      const nm = el.querySelector('#rDel').value;
+      if (!armed) { armed = true; del.textContent = `"${nm}" 정말 지우기`; return; }
+      try { await commit(d => { delete d.picks[nm]; }, `remove: ${nm}`); render(); } catch (e) { m().textContent = '지우지 못했어요.'; m().className = 'status err'; }
+    };
+  }
+}
+
+function render() {
+  renderClock();
+  const a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
+  renderMine(); renderBoard();
+  if (id) { const n = document.getElementById(id); if (n) { n.focus(); try { if (pos != null) n.setSelectionRange(pos, pos); } catch (e) {} } }
+}
+
+render();
+load();
+setInterval(() => { const a = document.activeElement; if (!S.saving && !document.hidden && !(a && (a.tagName === 'INPUT' || a.tagName === 'SELECT'))) load(); }, 30000);
+setInterval(renderClock, 30000);
+</script>
+</body>
+</html>
