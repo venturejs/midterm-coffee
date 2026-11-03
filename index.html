@@ -568,7 +568,7 @@ const RACES = [
   { st: '캔자스', slug: 'kansas', now: 'R', d: 'Adam Hamilton', r: 'Roger Marshall', note: '1932년 이후 민주 상원의원 없음. 농민 불만' },
   { st: '알래스카', slug: 'alaska', now: 'R', d: 'Mary Peltola', r: 'Dan Sullivan', note: '동명이인 후보 논란. 확정이 가장 늦을 수 있음' },
   { st: '아이오와', slug: 'iowa', now: 'R', d: 'Josh Turek', r: 'Ashley Hinson', note: '공화가 지킬 가능성이 가장 높다던 곳' },
-  { st: '사우스캐롤라이나', slug: 'south-carolina', now: 'R', d: 'Annie Andrews', r: 'Graham', note: '그레이엄 지역. 공화 우세 유지' },
+  { st: '사우스캐롤라이나', slug: 'south-carolina', now: 'R', d: 'Annie Andrews', r: 'Graham', note: '예측시장에서 공화 우세 유지' },
 ];
 const L = { house: null, senate: null, races: {}, at: null, err: false };
 const yes = m => { try { return parseFloat(JSON.parse(m.outcomePrices)[0]); } catch (e) { return null; } };
@@ -622,7 +622,7 @@ function renderLive() {
       <div class="bar" style="height:10px"><i class="d" style="width:${(m.p || 0) * 100}%;padding:0"></i><i class="r" style="width:${(1 - (m.p || 0)) * 100}%;padding:0"></i></div>
       <div style="display:flex;flex-direction:column;gap:6px">
         <span class="small">확정 의석 ${status}</span>
-        <div class="seatbar"><i class="d" style="width:${d / C.total * 100}%">${d ? `민주 ${d}` : ''}</i><i class="r" style="width:${r / C.total * 100}%">${r ? `공화 ${r}` : ''}</i><span class="maj" style="left:${C.maj / C.total * 100}%"></span></div>
+        <div class="seatbar">${d ? `<i class="d" style="width:${d / C.total * 100}%">민주 ${d}</i>` : ''}${r ? `<i class="r" style="width:${r / C.total * 100}%">공화 ${r}</i>` : ''}<span class="maj" style="left:${C.maj / C.total * 100}%"></span></div>
         <div class="seatleg"><span>과반선 ${C.maj}석${k === 'senate' ? ' (50:50이면 공화)' : ''}</span><span>미확정 ${left}석</span><span>${k === 'senate' ? '이번에 안 뽑는 의석 민주 34·공화 31 포함' : `전체 ${C.total}석`}</span></div>
       </div>`;
   }
@@ -633,7 +633,7 @@ function renderRaces() {
   document.getElementById('raceUpd').textContent = L.at ? `${kstFmt.format(L.at)} 기준` : '';
   document.getElementById('raceRows').innerHTML = RACES.map(r => {
     const o = L.races[r.slug], call = calls[r.slug] || (o && o.d > .97 ? 'D' : o && o.r > .97 ? 'R' : null);
-    const bar = o ? `<div class="oddsbar"><i class="d" style="width:${o.d * 100}%">${o.d >= .12 ? pct(o.d) : ''}</i><i class="r" style="width:${o.r * 100}%">${o.r >= .12 ? pct(o.r) : ''}</i></div>` : '<span class="muted small">불러오는 중</span>';
+    const bar = o ? `<div class="oddsbar"><i class="d" style="width:${o.d * 100}%">${o.d >= .12 ? pct(o.d) : ''}</i><i class="r" style="width:${o.r * 100}%">${o.r >= .12 ? `${100 - Math.round(o.d * 100)}%` : ''}</i></div>` : '<span class="muted small">불러오는 중</span>';
     return `<tr><td>${r.st}${call ? `<span class="called ${call.toLowerCase()}">${call === 'D' ? '민주' : '공화'} 승</span>` : ''}</td><td>${r.now === 'D' ? '민주' : '공화'}</td>
       <td class="small">${esc(o?.dn || r.d)} <span class="muted">vs</span> ${esc(o?.rn || r.r)}</td><td>${bar}</td><td class="small">${esc(r.note)}</td></tr>`;
   }).join('');
