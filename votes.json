@@ -1,1 +1,13 @@
-{"config":{},"picks":{}}
+{
+  "config": {},
+  "picks": {
+    "김준수": {
+      "house": "D",
+      "senate": "R",
+      "hSeats": null,
+      "sSeats": null,
+      "memo": "...제발...",
+      "at": 1793669792067
+    }
+  }
+}
