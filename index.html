@@ -4,211 +4,250 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>중간선거 커피내기</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nunito:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-/* 포털형 레이아웃: 흰 바탕, 얇은 회색 구분선, 초록 포인트 하나. 모듈 제목 + 본문의 반복 */
+/* 금융 데이터 화면: 검은 마스트헤드와 시세 띠, 흰 본문, 굵은 검정 구분선 + 얇은 회색 선, 앰버 포인트 하나. 숫자는 전부 고정폭 */
 :root {
-  --bg: #f5f6f7;
+  --ink: #0e0f11;
+  --ink2: #1a1c20;
+  --bg: #f4f4f2;
   --surface: #ffffff;
-  --sunk: #f7f8fa;
-  --fg: #1e1e23;
-  --sub: #555a64;
-  --muted: #8e939c;
-  --line: #e4e8eb;
-  --green: #03c75a;
-  --green-soft: #e9faf0;
-  --dem: #3d7be0;
-  --dem-soft: #eaf2fd;
-  --rep: #e5484d;
-  --rep-soft: #fdeced;
-  --gold: #fff6d6;
-  --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --num: "Nunito", "Noto Sans KR", system-ui, sans-serif;
+  --sunk: #f6f6f4;
+  --fg: #16171a;
+  --sub: #4b4f57;
+  --muted: #868a92;
+  --line: #e2e2de;
+  --rule: #16171a;
+  --amber: #f59a0c;
+  --amber-ink: #b86e00;
+  --amber-soft: #fff4e0;
+  --dem: #2f6fde;
+  --dem-soft: #eaf1fd;
+  --rep: #de3b40;
+  --rep-soft: #fdecec;
+  --up: #11965a;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body {
-  background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -.02em;
-  padding-block: 0 56px;
-}
-.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 18px; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.6; padding-bottom: 48px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 h1, h2, h3, p { margin: 0; }
-.num { font-family: var(--num); font-variant-numeric: tabular-nums; letter-spacing: 0; }
 a { color: inherit; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 [hidden] { display: none !important; }
 
-/* 머리 */
-.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
-.masthead .wrap { flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 22px; }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand i { width: 14px; height: 14px; border-radius: 4px; background: var(--green); flex: none; }
-.brand h1 { font-size: 34px; font-weight: 900; letter-spacing: -.04em; }
-.brand h1 span { color: var(--green); }
-.clock { text-align: right; display: flex; flex-direction: column; gap: 2px; }
-.clock b { font-family: var(--num); font-size: 28px; font-weight: 800; letter-spacing: 0; }
-.clock span { font-size: 16px; color: var(--sub); font-weight: 500; }
-.clock span em { font-style: normal; color: var(--green); font-weight: 700; }
+/* 마스트헤드 */
+.mast { background: var(--ink); color: #f2f2f0; }
+.mast .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 18px; }
+.brand { display: flex; align-items: baseline; gap: 12px; }
+.brand h1 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.brand h1 span { color: var(--amber); }
+.brand small { font-family: var(--mono); font-size: 12px; color: #9a9ea6; letter-spacing: .06em; }
+.clock { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.clock b { font-family: var(--mono); font-size: 20px; font-weight: 500; }
+.clock span { font-size: 13px; color: #b5b8be; }
+.clock span em { font-style: normal; color: var(--amber); font-family: var(--mono); font-weight: 600; }
 
-.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.tl { padding: 14px 16px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.ticker { background: var(--ink2); color: #e9e9e6; border-top: 1px solid #2a2d33; }
+.ticker .wrap { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+.ticker .wrap::-webkit-scrollbar { display: none; }
+.tk { display: flex; align-items: baseline; gap: 8px; padding: 9px 18px 9px 0; margin-right: 18px; border-right: 1px solid #2f3238; white-space: nowrap; font-size: 13px; }
+.tk:last-child { border-right: 0; }
+.tk span { color: #9a9ea6; font-family: var(--mono); font-size: 12px; letter-spacing: .04em; }
+.tk b { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+.tk .d { color: #7ea8ff; } .tk .r { color: #ff7b7f; } .tk .a { color: var(--amber); }
+.tk i { font-style: normal; font-family: var(--mono); font-size: 12px; }
+.tk i.up { color: #7ea8ff; } .tk i.dn { color: #ff7b7f; }
+
+main.wrap { display: flex; flex-direction: column; gap: 20px; padding-top: 20px; }
+
+/* 일정 */
+.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--surface); border-top: 2px solid var(--rule); border-bottom: 1px solid var(--line); }
+.tl { padding: 12px 14px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
 .tl:first-child { border-left: 0; }
-.tl b { font-family: var(--num); font-size: 17px; font-weight: 800; letter-spacing: 0; }
-.tl span { font-size: 15px; color: var(--sub); line-height: 1.4; }
+.tl b { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.tl span { font-size: 13px; color: var(--sub); line-height: 1.4; }
 .tl.past b, .tl.past span { color: var(--muted); }
-.tl.now { background: var(--green-soft); box-shadow: inset 0 3px 0 var(--green); }
-.tl.key b { color: var(--green); }
+.tl.now { background: var(--amber-soft); box-shadow: inset 0 3px 0 var(--amber); }
+.tl.key b { color: var(--amber-ink); }
 
 /* 모듈 */
-.module { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-.mod-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-.mod-head h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-.mod-head .meta { font-size: 15px; color: var(--muted); }
-.mod-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-.live-badge { font-family: var(--num); font-size: 13px; font-weight: 800; color: #fff; background: var(--rep); border-radius: 4px; padding: 2px 7px; letter-spacing: .04em; }
+.module { background: var(--surface); border-top: 2px solid var(--rule); }
+.mod-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.mod-head h2 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -.01em; }
+.mod-head .meta { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.mod-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.live-badge { font-family: var(--mono); font-size: 11px; font-weight: 600; color: #fff; background: var(--rep); padding: 2px 6px; letter-spacing: .08em; }
 .live-badge.idle { background: var(--muted); }
 
-/* 개표 상황판 */
-.headline { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--gold); border-radius: 10px; padding: 12px 16px; font-size: 17px; font-weight: 700; }
-.headline .links { display: flex; gap: 8px; flex-wrap: wrap; }
-.headline .links a { font-size: 15px; font-weight: 500; text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
-.headline .links a:hover { border-color: var(--green); color: var(--green); }
-.chambers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.chamber { border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.headline { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-left: 3px solid var(--amber); background: var(--sunk); padding: 10px 14px; font-size: 15px; font-weight: 600; }
+.headline .links { display: flex; gap: 14px; flex-wrap: wrap; font-weight: 500; font-size: 13px; }
+.headline .links a { text-decoration: none; color: var(--sub); border-bottom: 1px solid var(--line); }
+.headline .links a:hover { color: var(--amber-ink); border-color: var(--amber); }
+.chambers { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); }
+.chamber { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.chamber + .chamber { border-left: 1px solid var(--line); }
 .chamber .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
-.chamber h3 { font-size: 22px; font-weight: 700; }
+.chamber h3 { font-size: 15px; font-weight: 700; }
+.chamber h3 small { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; font-family: var(--mono); }
 .chamber .prob { display: flex; align-items: baseline; gap: 8px; }
-.chamber .prob small { font-size: 15px; color: var(--sub); }
-.chamber .prob b { font-family: var(--num); font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: 0; color: var(--dem); }
-.chg { font-family: var(--num); font-size: 15px; font-weight: 700; }
+.chamber .prob small { font-size: 12px; color: var(--sub); }
+.chamber .prob b { font-family: var(--mono); font-size: 30px; font-weight: 600; line-height: 1; color: var(--dem); }
+.chg { font-family: var(--mono); font-size: 13px; font-weight: 600; }
 .chg.up { color: var(--dem); } .chg.dn { color: var(--rep); }
-.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--sunk); }
-.bar i { display: block; }
-.bar .d { background: var(--dem); } .bar .r { background: var(--rep); margin-left: auto; }
-.seatline { font-size: 16px; font-weight: 500; }
-.seatbar { position: relative; display: flex; height: 34px; border-radius: 8px; overflow: hidden; background: var(--sunk); }
-.seatbar i { display: flex; align-items: center; font-style: normal; font-family: var(--num); font-size: 15px; font-weight: 800; color: #fff; padding: 0 10px; white-space: nowrap; letter-spacing: 0; transition: width .6s; }
+.bar { display: flex; height: 6px; overflow: hidden; background: var(--sunk); }
+.bar i { display: block; } .bar .d { background: var(--dem); } .bar .r { background: var(--rep); margin-left: auto; }
+.seatline { font-size: 13px; color: var(--sub); }
+.seatline b { color: var(--fg); }
+.seatbar { position: relative; display: flex; height: 26px; overflow: hidden; background: var(--sunk); }
+.seatbar i { display: flex; align-items: center; font-style: normal; font-family: var(--mono); font-size: 12px; font-weight: 600; color: #fff; padding: 0 8px; white-space: nowrap; transition: width .6s; }
 .seatbar .d { background: var(--dem); } .seatbar .r { background: var(--rep); margin-left: auto; justify-content: flex-end; }
-.seatbar .maj { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--fg); }
-.seatleg { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); gap: 8px; }
+.seatbar .maj { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--fg); }
+.seatleg { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); gap: 8px; }
 
 .tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 16px; }
-th { text-align: left; font-size: 15px; font-weight: 500; color: var(--muted); padding: 10px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--sunk); }
-td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-tr:last-child td { border-bottom: 0; }
-.races td:first-child { font-weight: 700; white-space: nowrap; }
-.oddsbar { display: flex; height: 24px; border-radius: 6px; overflow: hidden; min-width: 170px; background: var(--sunk); }
-.oddsbar i { font-style: normal; font-family: var(--num); font-size: 14px; font-weight: 800; color: #fff; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; letter-spacing: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; letter-spacing: .04em; }
+td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.races td:first-child { font-weight: 600; white-space: nowrap; }
+.oddsbar { display: flex; height: 20px; overflow: hidden; min-width: 160px; background: var(--sunk); }
+.oddsbar i { font-style: normal; font-family: var(--mono); font-size: 12px; font-weight: 600; color: #fff; display: flex; align-items: center; padding: 0 6px; white-space: nowrap; }
 .oddsbar .d { background: var(--dem); } .oddsbar .r { background: var(--rep); justify-content: flex-end; margin-left: auto; }
-.cand { font-size: 15px; color: var(--sub); white-space: nowrap; }
-.tag { display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; white-space: nowrap; }
+.cand { font-size: 13px; color: var(--sub); white-space: nowrap; }
+.note { font-size: 13px; color: var(--sub); min-width: 220px; }
+.tag { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 1px 6px; margin-left: 6px; white-space: nowrap; }
 .tag.d { background: var(--dem); color: #fff; } .tag.r { background: var(--rep); color: #fff; }
-.seat-now { font-size: 15px; color: var(--sub); }
+.seat-now { font-size: 13px; color: var(--sub); }
 
 /* 찍기 · 집계 */
-.play { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 18px; align-items: start; }
-.form { display: flex; flex-direction: column; gap: 16px; }
-.q { font-size: 17px; font-weight: 700; margin-bottom: 8px; display: block; }
-.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.choice button { font: inherit; font-size: 18px; font-weight: 700; padding: 14px; border-radius: 10px; cursor: pointer; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); }
-.choice button.d[aria-pressed="true"] { border-color: var(--dem); background: var(--dem-soft); color: var(--dem); }
-.choice button.r[aria-pressed="true"] { border-color: var(--rep); background: var(--rep-soft); color: var(--rep); }
-.choice button:disabled { cursor: not-allowed; opacity: .6; }
-input[type=text], input[type=number], select { font: inherit; font-size: 17px; color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 13px; width: 100%; }
-input:focus, select:focus { outline: none; border-color: var(--green); }
-.btn { font: inherit; font-size: 18px; font-weight: 700; border-radius: 10px; padding: 14px 20px; cursor: pointer; border: 0; background: var(--green); color: #fff; }
-.btn.line { background: var(--surface); color: var(--fg); border: 1.5px solid var(--line); font-size: 16px; padding: 10px 16px; }
+.play { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 20px; align-items: start; }
+.form { display: flex; flex-direction: column; gap: 14px; }
+.q { font-size: 13px; font-weight: 600; color: var(--sub); margin-bottom: 6px; display: block; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.choice button { font: inherit; font-size: 15px; font-weight: 600; padding: 11px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.choice button:hover { border-color: var(--sub); }
+.choice button.d[aria-pressed="true"] { border-color: var(--dem); background: var(--dem); color: #fff; }
+.choice button.r[aria-pressed="true"] { border-color: var(--rep); background: var(--rep); color: #fff; }
+.choice button:disabled { cursor: not-allowed; opacity: .55; }
+input[type=text], input[type=number], select { font: inherit; font-size: 15px; color: var(--fg); background: var(--surface); border: 1px solid var(--line); padding: 9px 11px; width: 100%; border-radius: 0; }
+input:focus, select:focus { outline: none; border-color: var(--rule); }
+.btn { font: inherit; font-size: 15px; font-weight: 600; padding: 12px 18px; cursor: pointer; border: 0; background: var(--ink); color: #fff; }
+.btn:hover { background: #2a2c31; }
+.btn.line { background: var(--surface); color: var(--fg); border: 1px solid var(--line); font-size: 14px; padding: 9px 14px; }
 .btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
-button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-.status { font-size: 16px; min-height: 1.4em; font-weight: 500; }
-.status.ok { color: var(--green); } .status.err { color: var(--rep); }
-.notice { background: var(--sunk); border-radius: 10px; padding: 14px 16px; font-size: 16px; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.status { font-size: 13px; min-height: 1.4em; }
+.status.ok { color: var(--up); } .status.err { color: var(--rep); }
+.notice { border-left: 3px solid var(--amber); background: var(--sunk); padding: 10px 14px; font-size: 14px; }
 
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.stat { background: var(--sunk); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.stat h3 { font-size: 17px; font-weight: 700; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); }
+.stat { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat h3 { font-size: 13px; font-weight: 600; color: var(--sub); }
 .split { display: flex; justify-content: space-between; align-items: baseline; }
-.split b { font-family: var(--num); font-size: 30px; font-weight: 800; letter-spacing: 0; line-height: 1; }
-.split b small { font-size: 16px; font-weight: 700; margin-left: 2px; }
+.split b { font-family: var(--mono); font-size: 24px; font-weight: 600; line-height: 1; }
+.split b small { font-size: 13px; margin-left: 1px; }
 .split .d { color: var(--dem); } .split .r { color: var(--rep); }
-.split span { font-size: 15px; color: var(--sub); }
-.combo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.combo div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
-.combo span { font-size: 14px; color: var(--sub); }
-.combo b { font-family: var(--num); font-size: 22px; font-weight: 800; letter-spacing: 0; }
-.pill { display: inline-block; font-size: 14px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.split span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.combo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); }
+.combo div { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.combo div + div { border-left: 1px solid var(--line); }
+.combo span { font-size: 12px; color: var(--sub); }
+.combo b { font-family: var(--mono); font-size: 20px; font-weight: 600; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 1px 8px; white-space: nowrap; }
 .pill.d { background: var(--dem-soft); color: var(--dem); } .pill.r { background: var(--rep-soft); color: var(--rep); }
-.board tr.me td { background: var(--green-soft); }
-.board .memo { color: var(--sub); }
-.empty { text-align: center; color: var(--muted); padding: 24px 0; font-size: 16px; }
+.board tr.me td { background: var(--amber-soft); }
+.board .memo { color: var(--sub); font-size: 13px; }
+.empty { text-align: center; color: var(--muted); padding: 22px 0; font-size: 14px; }
 
-.admin { border-top: 1px dashed var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 12px; }
-.admin h3 { font-size: 18px; font-weight: 700; }
-.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.field { display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: var(--sub); }
+.admin { border-top: 1px dashed var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.admin h3 { font-size: 14px; font-weight: 700; }
+.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--sub); }
 
 /* 펼침 정보 */
-.info { display: flex; flex-direction: column; gap: 10px; }
-details.acc { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-details.acc summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; font-size: 20px; font-weight: 700; }
+.info-head { display: flex; justify-content: space-between; align-items: baseline; border-top: 2px solid var(--rule); padding-top: 10px; }
+.info-head h2 { font-size: 16px; font-weight: 700; }
+.info-head span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.info { background: var(--surface); }
+details.acc { border-bottom: 1px solid var(--line); }
+details.acc summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 34px minmax(0, 1fr) 20px; align-items: center; gap: 10px; padding: 14px 18px; }
 details.acc summary::-webkit-details-marker { display: none; }
-details.acc summary::after { content: ""; width: 10px; height: 10px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .2s; margin-right: 4px; flex: none; }
-details.acc[open] summary::after { transform: rotate(-135deg); }
-details.acc[open] summary { border-bottom: 1px solid var(--line); color: var(--green); }
-details.acc .acc-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.side { border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-.side.d { background: var(--dem-soft); } .side.r { background: var(--rep-soft); } .side.n { background: var(--sunk); }
-.side h3 { font-size: 18px; font-weight: 700; }
-.side.d h3 { color: var(--dem); } .side.r h3 { color: var(--rep); }
-.side ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
-.side li b { font-weight: 700; }
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.kpi { background: var(--sunk); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
-.kpi span { font-size: 15px; color: var(--sub); }
-.kpi b { font-family: var(--num); font-size: 26px; font-weight: 800; letter-spacing: 0; }
+details.acc summary .no { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+details.acc summary .tt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+details.acc summary .tt b { font-size: 16px; font-weight: 600; }
+details.acc summary .tt small { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+details.acc summary::after { content: "+"; font-family: var(--mono); font-size: 20px; color: var(--sub); text-align: right; }
+details.acc[open] summary::after { content: "−"; color: var(--amber-ink); }
+details.acc[open] summary .tt b { color: var(--amber-ink); }
+details.acc summary:hover { background: var(--sunk); }
+.acc-body { padding: 4px 18px 22px 62px; display: flex; flex-direction: column; gap: 16px; }
+.lead { font-size: 15px; color: var(--fg); max-width: 72ch; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.side { display: flex; flex-direction: column; gap: 8px; }
+.side h3 { font-size: 14px; font-weight: 700; padding-bottom: 6px; border-bottom: 2px solid var(--line); }
+.side.d h3 { color: var(--dem); border-color: var(--dem); } .side.r h3 { color: var(--rep); border-color: var(--rep); } .side.n h3 { border-color: var(--rule); }
+.side ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.side li b { font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); }
+.kpi { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.kpi + .kpi { border-left: 1px solid var(--line); }
+.kpi span { font-size: 12px; color: var(--sub); }
+.kpi b { font-family: var(--mono); font-size: 20px; font-weight: 600; }
 .kpi b.d { color: var(--dem); }
-.sectors td { vertical-align: top; line-height: 1.55; }
-.sectors td:first-child { font-weight: 700; white-space: nowrap; }
-.up { color: var(--green); font-weight: 700; } .down { color: var(--rep); font-weight: 700; }
-.sources { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 16px; }
+.kpi em { font-style: normal; font-size: 12px; color: var(--muted); }
+.sectors td { vertical-align: top; line-height: 1.55; font-size: 13.5px; }
+.sectors td:first-child { font-weight: 600; white-space: nowrap; }
+.up { color: var(--up); font-weight: 600; } .down { color: var(--rep); font-weight: 600; }
+.fine { font-size: 12px; color: var(--muted); }
+.glossary { display: grid; grid-template-columns: 160px minmax(0, 1fr); margin: 0; font-size: 14px; }
+.glossary dt { font-weight: 600; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.glossary dd { margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--sub); }
+.sources { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 
-@media (max-width: 880px) {
+@media (max-width: 900px) {
   .chambers, .play, .two, .stats { grid-template-columns: 1fr; }
+  .chamber + .chamber, .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
   .timeline { grid-template-columns: 1fr 1fr; }
   .tl { border-left: 0; border-top: 1px solid var(--line); }
   .tl:nth-child(-n+2) { border-top: 0; }
   .tl:nth-child(even) { border-left: 1px solid var(--line); }
   .kpis { grid-template-columns: 1fr 1fr; }
+  .kpi:nth-child(3) { border-left: 0; }
+  .kpi:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .acc-body { padding-left: 18px; }
+  .note { display: none; }
 }
 @media (max-width: 520px) {
-  body { font-size: 16px; }
-  .brand h1 { font-size: 28px; }
-  .clock { text-align: left; }
-  .clock b { font-size: 24px; }
-  .mod-body, details.acc .acc-body { padding: 16px; }
-  .grid4 { grid-template-columns: 1fr 1fr; }
   .combo { grid-template-columns: 1fr 1fr; }
-  .chamber .prob b { font-size: 34px; }
+  .combo div:nth-child(3) { border-left: 0; }
+  .combo div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .grid4 { grid-template-columns: 1fr 1fr; }
+  .glossary { grid-template-columns: 1fr; }
+  .glossary dt { border-bottom: 0; padding-bottom: 0; }
+  details.acc summary { grid-template-columns: 26px minmax(0, 1fr) 16px; padding: 12px 14px; }
+  .mod-body { padding: 14px; }
 }
-@media (prefers-reduced-motion: reduce) { .seatbar i, details.acc summary::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .seatbar i { transition: none; } }
 </style>
 </head>
 <body>
 
-<header class="masthead">
+<header class="mast">
   <div class="wrap">
-    <div class="brand"><i></i><h1>중간선거 <span>커피내기</span></h1></div>
+    <div class="brand"><h1>중간선거 <span>커피내기</span></h1><small>US MIDTERMS 2026</small></div>
     <div class="clock"><b id="kst">--:--</b><span id="phase"></span></div>
   </div>
+  <div class="ticker"><div class="wrap" id="ticker"></div></div>
 </header>
 
-<div class="wrap" style="padding-top:18px">
+<main class="wrap">
 
   <div class="timeline" id="timeline"></div>
 
-  <!-- 개표 상황판 -->
   <section class="module">
     <div class="mod-head">
       <h2>개표 상황판 <span class="live-badge" id="liveBadge">LIVE</span></h2>
@@ -222,14 +261,13 @@ details.acc .acc-body { padding: 20px; display: flex; flex-direction: column; ga
       </div>
       <div class="tbl-wrap">
         <table class="races">
-          <thead><tr><th>상원 승부처</th><th>현재</th><th>후보 (민주 vs 공화)</th><th>승리 확률</th></tr></thead>
+          <thead><tr><th>상원 승부처</th><th>현재</th><th>후보 (민주 vs 공화)</th><th>승리 확률</th><th>관전 포인트</th></tr></thead>
           <tbody id="raceRows"></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- 찍기 · 집계 -->
   <div class="play">
     <section class="module">
       <div class="mod-head"><h2>내 예측</h2><span class="meta" id="mineMeta"></span></div>
@@ -241,118 +279,175 @@ details.acc .acc-body { padding: 20px; display: flex; flex-direction: column; ga
     </section>
   </div>
 
-  <!-- 펼침 정보 -->
-  <div class="info">
-    <details class="acc">
-      <summary>판세 한눈에</summary>
-      <div class="acc-body">
-        <div class="kpis">
-          <div class="kpi"><span>하원 민주 승리 (예측시장)</span><b class="d">93~95%</b></div>
-          <div class="kpi"><span>상원 민주 승리 (예측시장)</span><b class="d">71~72%</b></div>
-          <div class="kpi"><span>전국 정당 지지 여론조사</span><b>민주 +8.6</b></div>
-          <div class="kpi"><span>사전투표</span><b>5,300만+</b></div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>구분</th><th>하원 (과반 218석)</th><th>상원 (과반 51석)</th></tr></thead>
-            <tbody>
-              <tr><td>현재</td><td>공화 근소 다수</td><td>공화 53 : 민주 47</td></tr>
-              <tr><td>Decision Desk HQ</td><td>민주 83%</td><td>민주 63%</td></tr>
-              <tr><td>쿡 폴리티컬 리포트</td><td>민주 우세 220석, 경합 17석</td><td>경합 7곳 중 민주가 4곳 이겨야 과반</td></tr>
-              <tr><td>사바토 크리스털볼</td><td>민주 우세 225석</td><td>경합 5곳 중 민주가 2곳 이겨야 과반</td></tr>
-              <tr><td>결과 조합 (Polymarket)</td><td colspan="2">민주 양원 71% · 하원 민주+상원 공화 24% · 공화 양원 5%</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </details>
+  <section>
+    <div class="info-head"><h2>읽을거리</h2><span>눌러서 펼치기</span></div>
+    <div class="info">
 
-    <details class="acc">
-      <summary>양쪽 논리</summary>
-      <div class="acc-body two">
-        <div class="side d">
-          <h3>민주당이 이긴다고 보는 근거</h3>
-          <ul>
-            <li><b>집권당 징크스</b> 대통령 소속 정당은 중간선거에서 하원 의석을 잃는 경우가 대부분</li>
-            <li><b>경제 불만</b> 관세·물가, 이란 전쟁 여파로 오른 연료·비료 가격</li>
-            <li><b>여론조사 격차</b> 전국 정당 지지 민주 +8.6%p, 2017년 이후 최대</li>
-            <li><b>사전투표 열기</b> 5,300만 명 돌파, 민주 지지자 비중이 더 높음</li>
-            <li><b>공화 텃밭 균열</b> 메인·텍사스·오하이오 민주 우세, 캔자스 접전</li>
-          </ul>
+      <details class="acc">
+        <summary><span class="no">01</span><span class="tt"><b>판세 한눈에</b><small>예측시장, 예측기관, 여론조사 숫자 정리</small></span></summary>
+        <div class="acc-body">
+          <p class="lead">세 가지 신호(예측시장, 예측기관, 여론조사)가 모두 하원은 민주당 쪽을 가리키고 있어요. 상원은 민주당이 앞선다는 쪽이 많지만 격전지가 전부 오차범위 안이라 확신하기 어려운 상태예요.</p>
+          <div class="kpis">
+            <div class="kpi"><span>하원 민주 승리</span><b class="d">93~95%</b><em>Kalshi·Polymarket, 11/1~2</em></div>
+            <div class="kpi"><span>상원 민주 승리</span><b class="d">71~72%</b><em>Kalshi·Polymarket, 11/1~2</em></div>
+            <div class="kpi"><span>전국 정당 지지</span><b>민주 +8.6</b><em>51.7 : 43.1, 11/2 평균</em></div>
+            <div class="kpi"><span>사전투표</span><b>5,300만+</b><em>2022년 4,600만</em></div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>구분</th><th>하원 · 과반 218석</th><th>상원 · 과반 51석</th></tr></thead>
+              <tbody>
+                <tr><td>현재 의석</td><td>공화 근소 다수</td><td>공화 53 : 민주 47 (무소속 2 포함)</td></tr>
+                <tr><td>Decision Desk HQ</td><td>민주 83%</td><td>민주 63%</td></tr>
+                <tr><td>쿡 폴리티컬 리포트</td><td>민주 우세 220석, 경합 17석. 좋은 밤이면 최대 240석</td><td>경합 7곳 중 민주가 4곳을 이겨야 과반</td></tr>
+                <tr><td>사바토 크리스털볼</td><td>민주 우세 225석</td><td>경합 5곳 중 민주가 2곳을 이겨야 과반</td></tr>
+                <tr><td>폭스뉴스 파워랭킹</td><td>민주 탈환, 공화가 잘해도 212석</td><td>접전. 민주 최대 54석, 공화 최대 52석</td></tr>
+                <tr><td>Economist/YouGov</td><td colspan="2">민주 +6%p (등록 유권자), 투표 의향층 기준 +11%p (10/23~26)</td></tr>
+                <tr><td>결과 조합</td><td colspan="2">Polymarket: 민주 양원 71% · 하원 민주+상원 공화 24% · 공화 양원 5%<br>대신증권: 63% · 28% · 8%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="fine">상원 민주 확률 추이(Kalshi): 3월 44% → 9월 57% → 10월 말 65% → 11월 1일 71%</p>
         </div>
-        <div class="side r">
-          <h3>공화당이 지킨다고 보는 근거</h3>
-          <ul>
-            <li><b>상원 지도</b> 민주는 기존 의석을 다 지키고 공화 의석 4곳을 더 뺏어야 과반</li>
-            <li><b>초접전</b> 격전지 7곳 모두 오차범위, 작은 오차로도 뒤집힘</li>
-            <li><b>여론조사 오차 전례</b> 공화 표 과소평가 시 상원은 반반 (대신증권)</li>
-            <li><b>민주 내분</b> 미시간 경선 패배자가 공화 후보 공개 지지</li>
-            <li><b>좋은 밤 시나리오</b> 공화 상원 최대 52석 가능 (폭스뉴스 분석)</li>
-          </ul>
-        </div>
-      </div>
-    </details>
+      </details>
 
-    <details class="acc">
-      <summary>시장은 무엇을 보고 있나</summary>
-      <div class="acc-body two">
-        <div class="side n">
-          <h3>미국</h3>
-          <ul>
-            <li><b>업종 차별화</b> 지수 전체보다 업종 간 희비가 커질 것 (월가)</li>
-            <li><b>분점 의회</b> 큰 법안은 어렵고, 예산·2027년 부채한도 협상이 변수 (찰스 슈왑)</li>
-            <li><b>민주 양원</b> 행정부 견제, 인사 인준·규제 정책 대립 확대</li>
-            <li><b>선거 후 주가</b> 1974년 이후 중간선거 6개월 뒤 S&amp;P500 13번 모두 상승, 평균 +12.4%</li>
-          </ul>
+      <details class="acc">
+        <summary><span class="no">02</span><span class="tt"><b>양쪽 논리</b><small>민주당이 이긴다는 근거와 공화당이 지킨다는 근거</small></span></summary>
+        <div class="acc-body">
+          <p class="lead">각 진영과 분석가들이 내세우는 근거를 그대로 옮겼어요. 어느 쪽이 맞는지는 판단하지 않았어요.</p>
+          <div class="two">
+            <div class="side d">
+              <h3>민주당이 이긴다고 보는 근거</h3>
+              <ul>
+                <li><b>집권당 징크스.</b> 대통령 소속 정당은 중간선거에서 하원 의석을 잃는 경우가 대부분이에요.</li>
+                <li><b>경제 불만.</b> 관세와 물가, 이란 전쟁 여파로 오른 난방유·연료·비료 가격이 공화당에 부담이에요. 아이오와·캔자스가 접전이 된 이유로도 꼽혀요.</li>
+                <li><b>여론조사 격차.</b> 전국 정당 지지가 민주 +8.6%p로 2017년 이후 가장 커요.</li>
+                <li><b>사전투표 열기.</b> 5,300만 명을 넘었고, 사전투표자 중 민주 지지자가 43%, 공화 31%, 무당층 25%예요.</li>
+                <li><b>공화 텃밭 균열.</b> 메인·텍사스·오하이오에서 민주 후보가 앞서요. 캔자스는 1932년 이후 민주 상원의원이 없던 곳인데도 접전이에요.</li>
+                <li><b>이민 단속 반발.</b> 강경 단속에 대한 반발로 텍사스 히스패닉 표심이 민주 쪽으로 기울고 있다는 분석이 있어요.</li>
+                <li><b>예측시장 흐름.</b> 9월 이후 상원 민주 확률이 꾸준히 올랐어요.</li>
+              </ul>
+            </div>
+            <div class="side r">
+              <h3>공화당이 지킨다고 보는 근거</h3>
+              <ul>
+                <li><b>상원 지도.</b> 민주당은 기존 의석을 다 지키면서 공화 의석 4곳을 더 뺏어야 해요. 하나만 놓쳐도 과반이 안 돼요.</li>
+                <li><b>초접전.</b> 격전지 7곳이 모두 오차범위 안이라, 작은 오차로도 결과가 뒤집혀요.</li>
+                <li><b>여론조사 오차 전례.</b> 대신증권은 여론조사가 공화 표를 과소평가하면 상원이 사실상 반반이 될 수 있다고 경고했어요.</li>
+                <li><b>민주 내분.</b> 미시간에서 경선에 진 스티븐스 의원이 공화 로저스 후보를 공개 지지했어요. 민주가 지켜야 하는 유일한 경합 의석이에요.</li>
+                <li><b>버티는 지역.</b> 사우스캐롤라이나는 공화 우세가 유지되고 있어요.</li>
+                <li><b>알래스카 변수.</b> 동명이인 후보 논란이 있고 확정이 늦어요. 다수당을 가르게 되면 공방이 길어질 수 있어요.</li>
+                <li><b>좋은 밤 시나리오.</b> 폭스뉴스는 공화가 상원을 최대 52석까지 지킬 수 있다고 봤고, 트럼프 대통령은 28차례 지원 유세를 했어요.</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="side n">
-          <h3>한국</h3>
-          <ul>
-            <li><b>승부처는 상원</b> 하원 민주 탈환은 사실상 확실, 상원은 접전</li>
-            <li><b>민주 승리 시</b> 미 금리·달러 안정 기대, 4분기 코스피 상단 6,700 (대신증권)</li>
-            <li><b>공화 양원 시</b> 원·달러 1,360~1,400원, 코스피 하단 4,950 가능성</li>
-            <li><b>불확실성 해소</b> 1950년 이후 선거 12개월 뒤 S&amp;P500 모두 상승, 코스피 9번 중 6번 상승</li>
-          </ul>
-        </div>
-      </div>
-    </details>
+      </details>
 
-    <details class="acc">
-      <summary>누가 이기면 어디가 움직이나</summary>
-      <div class="acc-body">
-        <div class="tbl-wrap">
-          <table class="sectors" style="min-width:720px">
-            <thead><tr><th>결과</th><th>미국</th><th>한국</th></tr></thead>
-            <tbody>
-              <tr><td>민주 양원</td><td><span class="up">▲</span> 병원·건강보험, 태양광·풍력<br><span class="down">▼</span> AI 데이터센터, 금융, 암호화폐, 방산</td><td><span class="up">▲</span> 전력기기(HD현대일렉트릭·효성중공업·LS일렉트릭), 헬스케어, 재생에너지, 증권·인터넷·2차전지<br><span class="down">▼</span> 데이터센터 관련주</td></tr>
-              <tr><td>하원 민주 · 상원 공화</td><td>정책 급변 제한, 예산 협상 때 변동성</td><td><span class="up">▲</span> ESS(에너지저장장치)</td></tr>
-              <tr><td>공화 양원</td><td><span class="up">▲</span> 방산(록히드마틴·노스롭그루먼·L3해리스), 금융·암호화폐</td><td><span class="up">▲</span> 방산(한화오션), 원전(두산에너빌리티), 보험</td></tr>
-              <tr><td>결과와 무관</td><td>불확실성 해소 자체가 호재</td><td><span class="up">▲</span> 반도체, 조선, 바이오, 은행, 호텔·레저<br><span class="down">▼</span> 건설, 에너지, 비철금속</td></tr>
-            </tbody>
-          </table>
+      <details class="acc">
+        <summary><span class="no">03</span><span class="tt"><b>오늘 밤 관전 순서</b><small>한국 시각으로 언제 어디를 보면 되나</small></span></summary>
+        <div class="acc-body">
+          <p class="lead">미국은 주마다 투표 마감 시각이 달라서, 결과도 동부부터 차례로 나와요. 아래는 각 주의 대표 마감 시각을 한국 시각으로 바꾼 거예요. 일부 주는 지역마다 1시간씩 차이가 나요.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>한국 시각</th><th>마감되는 주요 주</th><th>볼 것</th></tr></thead>
+              <tbody>
+                <tr><td class="num">11/4 08:00</td><td>인디애나·켄터키 일부</td><td>켄터키 6선거구. 2024년 트럼프가 15%p 이긴 곳인데 접전이라, 하원 분위기를 가장 먼저 보여 줄 지표로 꼽혀요.</td></tr>
+                <tr><td class="num">09:00</td><td>조지아, 버지니아, 사우스캐롤라이나 등</td><td>사우스캐롤라이나 상원. 공화 우세 지역이 버티는지 확인</td></tr>
+                <tr><td class="num">09:30</td><td>오하이오, 노스캐롤라이나 등</td><td>오하이오 상원(셰로드 브라운). 민주 탈환 여부가 상원의 첫 신호</td></tr>
+                <tr><td class="num">10:00</td><td>메인, 미시간, 펜실베이니아, 텍사스 대부분 등</td><td>메인·텍사스 상원 탈환, 미시간 수성. 상원 승부의 핵심 시간대</td></tr>
+                <tr><td class="num">11:00</td><td>캔자스, 아이오와 등</td><td>공화 텃밭 두 곳. 여기서 민주가 이기면 상원 과반이 넉넉해져요</td></tr>
+                <tr><td class="num">13:00~14:00</td><td>서부 (캘리포니아 등), 하와이</td><td>하원 접전 선거구가 많아 하원 의석수가 크게 움직여요</td></tr>
+                <tr><td class="num">15:00</td><td>알래스카 마지막 투표소</td><td>알래스카 상원. 개표와 확정이 가장 늦어 며칠 걸릴 수 있어요</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="fine">상원 동수(50:50)면 부통령이 공화당이라 공화 다수예요.</p>
         </div>
-        <p style="font-size:15px;color:var(--muted)">증권사·외신 의견을 정리한 것으로 투자 권유가 아니에요.</p>
-      </div>
-    </details>
+      </details>
 
-    <details class="acc">
-      <summary>출처</summary>
-      <div class="acc-body">
-        <ol class="sources">
-          <li><a href="https://news.kalshi.com/p/2026-midterm-predictions" target="_blank" rel="noopener">Kalshi News, 2026 Midterm Predictions</a></li>
-          <li><a href="https://uspollingdata.com/polls/generic-ballot/" target="_blank" rel="noopener">US Polling Data, Generic Ballot</a></li>
-          <li><a href="https://www.foxnews.com/politics/everything-know-house-senate-control-ballot-measures-2026-election-day-poll-closing" target="_blank" rel="noopener">Fox News, House·Senate control and poll closings</a></li>
-          <li><a href="https://www.schwab.com/learn/story/what-2026-midterms-could-mean-markets" target="_blank" rel="noopener">Charles Schwab, What the 2026 Midterms Could Mean for the Markets</a></li>
-          <li><a href="https://www.khan.co.kr/article/202611022112005/" target="_blank" rel="noopener">경향신문, 민주당 7대 격전지 중 최소 5곳 이겨야 상원 탈환</a></li>
-          <li><a href="https://www.joongangenews.com/news/articleView.html?idxno=560291" target="_blank" rel="noopener">중앙이코노미뉴스, 민주 하원 83%·상원 63% 전망</a></li>
-          <li><a href="https://www.hankyung.com/article/2026103175746" target="_blank" rel="noopener">한국경제, 누가 이겨야 코스피에 유리할까</a></li>
-          <li><a href="https://www.imaeil.com/page/view/2026102700343950481" target="_blank" rel="noopener">매일신문, 결과 따라 수혜 업종도 달라진다</a></li>
-          <li><a href="https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=01764646645641784" target="_blank" rel="noopener">이데일리, 월가가 꼽은 수혜·피해 업종</a></li>
-        </ol>
-      </div>
-    </details>
-  </div>
-</div>
+      <details class="acc">
+        <summary><span class="no">04</span><span class="tt"><b>시장은 무엇을 보고 있나</b><small>미국과 한국 증권가의 시각</small></span></summary>
+        <div class="acc-body">
+          <div class="two">
+            <div class="side n">
+              <h3>미국</h3>
+              <ul>
+                <li><b>업종 차별화.</b> 월가는 이번 선거가 지수 전체보다 업종 간 희비를 키울 것으로 봐요.</li>
+                <li><b>분점 의회면 큰 법안 없음.</b> 찰스 슈왑은 대형 입법은 어렵고 의회 감시가 늘며, 예산 처리와 2027년 부채한도 협상이 시장 변수가 될 거라고 봤어요.</li>
+                <li><b>민주 양원이면 감시 강화.</b> 행정부 견제, 인사 인준과 규제 정책을 둘러싼 대립이 커질 거라는 분석이에요.</li>
+                <li><b>암호화폐 업계의 베팅.</b> 관련 정치자금이 2억 달러를 넘어 단일 이슈 최대 규모예요. 디지털자산 시장구조법(클래리티법)의 운명이 선거 결과에 달렸다는 평가예요.</li>
+                <li><b>선거 후 주가.</b> 1974년 이후 중간선거 3개월 뒤 S&amp;P500은 13번 중 11번 올랐고(평균 +5.7%), 6개월 뒤엔 13번 모두 올랐어요(평균 +12.4%).</li>
+              </ul>
+            </div>
+            <div class="side n">
+              <h3>한국</h3>
+              <ul>
+                <li><b>"승부처는 상원."</b> 한국 언론은 하원 민주 탈환은 사실상 확실하고 상원은 접전으로 보는 분위기예요.</li>
+                <li><b>코스피는 민주 쪽이 유리하다는 시각.</b> 대신증권은 민주 하원이 재정 확장을 견제해 미국 금리와 달러가 안정될 수 있다고 봤어요. 4분기 코스피 범위 5,200~6,700, 내년 1분기 6,000~7,500.</li>
+                <li><b>공화 양원이면 금리·달러 상승.</b> 같은 분석에서 미 10년물 금리 0.15~0.3%p 상승, 원·달러 1,360~1,400원, 코스피 하단 4,950까지 열어 뒀어요.</li>
+                <li><b>불확실성 해소가 더 중요.</b> 1950년 이후 중간선거 12개월 뒤 S&amp;P500은 모두 올랐고(평균 +15.1%), 코스피는 9번 중 6번 올랐어요.</li>
+                <li><b>이미 움직인 종목.</b> 한국투자증권은 민주 상원 확률이 50%를 넘으면서 데이터센터 관련주가 약세를 보였다고 짚었어요.</li>
+                <li><b>위험 요인.</b> 2018년엔 무역전쟁과 금리 인상이 겹쳐 선거 뒤에도 연말까지 주가가 내렸어요. 선거 후 이란 공습 재개 가능성도 변수예요.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="no">05</span><span class="tt"><b>누가 이기면 어디가 움직이나</b><small>결과별 수혜·부담 섹터와 그 이유</small></span></summary>
+        <div class="acc-body">
+          <div class="tbl-wrap">
+            <table class="sectors" style="min-width:860px">
+              <thead><tr><th>결과</th><th>미국</th><th>한국</th><th>이유</th></tr></thead>
+              <tbody>
+                <tr><td>민주 양원<br><span class="fine">71% · 63%</span></td><td><span class="up">▲</span> 병원·건강보험, 태양광·풍력<br><span class="down">▼</span> AI 데이터센터, 금융, 암호화폐, 방산</td><td><span class="up">▲</span> 전력기기(HD현대일렉트릭·효성중공업·LS일렉트릭), 헬스케어, 재생에너지, 증권·인터넷·2차전지<br><span class="down">▼</span> 데이터센터 관련주</td><td>오바마케어 보조금 복원과 메디케이드 삭감 철회 기대, 재생에너지 세액공제 복원 논의, 데이터센터 전력·환경 규제 가능성. 빅테크 자체 변전소 수요로 초고압 전력기기는 기회</td></tr>
+                <tr><td>하원 민주 · 상원 공화<br><span class="fine">24% · 28%</span></td><td>정책 급변 제한, 예산·부채한도 협상 때 변동성</td><td><span class="up">▲</span> ESS(에너지저장장치)</td><td>양당이 함께 지지하는 정책만 추진력을 얻어요. ESS 투자세액공제는 감세법 이후에도 유지될 전망</td></tr>
+                <tr><td>공화 양원<br><span class="fine">5% · 8%</span></td><td><span class="up">▲</span> 방산(록히드마틴·노스롭그루먼·L3해리스, JP모건), 금융·암호화폐</td><td><span class="up">▲</span> 방산(한화오션 함정 MRO), 원전(두산에너빌리티 SMR), 보험<br><span class="down">▼</span> 금리·달러 상승 시 성장주</td><td>국방예산 확대, 원전 규제 완화, 금융·암호화폐 규제 완화 기대</td></tr>
+                <tr><td>결과와 무관</td><td>불확실성 해소 자체가 호재</td><td><span class="up">▲</span> 반도체·조선·바이오(대신), 조선·반도체·은행·헬스케어·호텔레저(신한)<br><span class="down">▼</span> 건설·에너지·비철금속(신한)</td><td>정책 변화와 상관없이 실적 개선이 이어질 업종 위주</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="fine">확률은 Polymarket · 대신증권 순. 증권사·외신 의견을 정리한 것으로 투자 권유가 아니에요.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="no">06</span><span class="tt"><b>용어 정리</b><small>과반, 분점 의회, 예측시장 등</small></span></summary>
+        <div class="acc-body">
+          <dl class="glossary">
+            <dt>과반</dt><dd>하원은 435석 중 218석, 상원은 100석 중 51석. 상원이 50:50이면 부통령이 캐스팅보트를 쥐어요.</dd>
+            <dt>중간선거</dt><dd>대통령 임기 중간에 치르는 선거. 하원 전체와 상원 3분의 1(이번엔 35석), 주지사 등을 뽑아요.</dd>
+            <dt>분점 의회</dt><dd>하원과 상원 다수당이 다른 상태. 법안 통과가 어려워 정책 급변 가능성이 줄어요.</dd>
+            <dt>블루·레드 스윕</dt><dd>한 정당이 상원·하원을 모두 가져가는 것. 민주는 파랑, 공화는 빨강.</dd>
+            <dt>예측시장</dt><dd>결과에 돈을 거는 시장(Kalshi, Polymarket). 가격이 곧 확률로 읽혀요. 공식 전망은 아니에요.</dd>
+            <dt>전국 정당 지지 조사</dt><dd>후보 이름 없이 "어느 당을 찍겠냐"고 묻는 조사(generic ballot). 하원 결과를 가늠하는 대표 지표예요.</dd>
+            <dt>확정(콜)</dt><dd>AP 같은 언론이 개표 상황을 보고 승자를 발표하는 것. 접전이면 며칠 걸리기도 해요.</dd>
+          </dl>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="no">07</span><span class="tt"><b>출처</b><small>기사·자료 링크</small></span></summary>
+        <div class="acc-body">
+          <ol class="sources">
+            <li><a href="https://news.kalshi.com/p/2026-midterm-predictions" target="_blank" rel="noopener">Kalshi News, 2026 Midterm Predictions</a></li>
+            <li><a href="https://uspollingdata.com/polls/generic-ballot/" target="_blank" rel="noopener">US Polling Data, Generic Ballot</a></li>
+            <li><a href="https://www.foxnews.com/politics/everything-know-house-senate-control-ballot-measures-2026-election-day-poll-closing" target="_blank" rel="noopener">Fox News, House·Senate control and poll closings</a></li>
+            <li><a href="https://www.schwab.com/learn/story/what-2026-midterms-could-mean-markets" target="_blank" rel="noopener">Charles Schwab, What the 2026 Midterms Could Mean for the Markets</a></li>
+            <li><a href="https://www.khan.co.kr/article/202611022112005/" target="_blank" rel="noopener">경향신문, 민주당 7대 격전지 중 최소 5곳 이겨야 상원 탈환</a></li>
+            <li><a href="https://www.joongangenews.com/news/articleView.html?idxno=560291" target="_blank" rel="noopener">중앙이코노미뉴스, 민주 하원 83%·상원 63% 전망</a></li>
+            <li><a href="https://www.hankyung.com/article/2026103175746" target="_blank" rel="noopener">한국경제, 누가 이겨야 코스피에 유리할까</a></li>
+            <li><a href="https://www.imaeil.com/page/view/2026102700343950481" target="_blank" rel="noopener">매일신문, 결과 따라 수혜 업종도 달라진다</a></li>
+            <li><a href="https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=01764646645641784" target="_blank" rel="noopener">이데일리, 월가가 꼽은 수혜·피해 업종</a></li>
+          </ol>
+        </div>
+      </details>
+
+    </div>
+  </section>
+</main>
 
 <script>
 // ───────── 저장소 ─────────
@@ -435,14 +530,14 @@ const CH = {
   senate: { slug: 'which-party-will-win-the-senate-in-2026', name: '상원', total: 100, maj: 51,  rmaj: 50,  base: { D: 34, R: 31 } },
 };
 const RACES = [
-  { st: '메인', slug: 'maine', now: 'R', d: 'Troy Jackson', r: 'Susan Collins' },
-  { st: '텍사스', slug: 'texas', now: 'R', d: 'James Talarico', r: 'Ken Paxton' },
-  { st: '오하이오', slug: 'ohio', now: 'R', d: 'Sherrod Brown', r: 'Jon Husted' },
-  { st: '미시간', slug: 'michigan', now: 'D', d: 'Abdul El-Sayed', r: 'Mike Rogers' },
-  { st: '캔자스', slug: 'kansas', now: 'R', d: 'Adam Hamilton', r: 'Roger Marshall' },
-  { st: '알래스카', slug: 'alaska', now: 'R', d: 'Mary Peltola', r: 'Dan Sullivan' },
-  { st: '아이오와', slug: 'iowa', now: 'R', d: 'Josh Turek', r: 'Ashley Hinson' },
-  { st: '사우스캐롤라이나', slug: 'south-carolina', now: 'R', d: 'Annie Andrews', r: 'Graham' },
+  { st: '메인', slug: 'maine', note: '중도파 콜린스 현역이 관세·난방유 가격 여파로 고전', now: 'R', d: 'Troy Jackson', r: 'Susan Collins' },
+  { st: '텍사스', slug: 'texas', note: '탈라리코가 여론조사 우위, 팩스턴은 모금 열세', now: 'R', d: 'James Talarico', r: 'Ken Paxton' },
+  { st: '오하이오', slug: 'ohio', note: '밴스 부통령 기반. 암호화폐 PAC이 5,500만 달러 투입', now: 'R', d: 'Sherrod Brown', r: 'Jon Husted' },
+  { st: '미시간', slug: 'michigan', note: '민주가 지켜야 하는 유일한 경합. 당내 분열 변수', now: 'D', d: 'Abdul El-Sayed', r: 'Mike Rogers' },
+  { st: '캔자스', slug: 'kansas', note: '1932년 이후 민주 상원의원 없음. 농민 불만', now: 'R', d: 'Adam Hamilton', r: 'Roger Marshall' },
+  { st: '알래스카', slug: 'alaska', note: '동명이인 후보 논란, 확정이 가장 늦음', now: 'R', d: 'Mary Peltola', r: 'Dan Sullivan' },
+  { st: '아이오와', slug: 'iowa', note: '공화가 지킬 가능성이 높다던 곳이 반반', now: 'R', d: 'Josh Turek', r: 'Ashley Hinson' },
+  { st: '사우스캐롤라이나', slug: 'south-carolina', note: '공화 우세 유지', now: 'R', d: 'Annie Andrews', r: 'Graham' },
 ];
 const L = { house: null, senate: null, races: {}, at: null, err: false };
 const yes = m => { try { return parseFloat(JSON.parse(m.outcomePrices)[0]); } catch (e) { return null; } };
@@ -463,7 +558,7 @@ async function loadMarkets() {
     });
     L.at = Date.now(); L.err = false;
   } catch (e) { L.err = true; }
-  renderLive();
+  renderLive(); renderTicker();
 }
 const pct = v => v == null ? '-' : `${Math.round(v * 100)}%`;
 const chg = v => v == null || Math.abs(v) < .005 ? '' : `<span class="chg ${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲' : '▼'}${Math.abs(Math.round(v * 100))}</span>`;
@@ -490,7 +585,7 @@ function renderLive() {
     const d = C.base.D + (+lv[k + 'D'] || 0), r = C.base.R + (+lv[k + 'R'] || 0), rest = C.total - d - r;
     const line = d >= C.maj ? '<b style="color:var(--dem)">민주 과반 확정</b>' : r >= C.rmaj ? '<b style="color:var(--rep)">공화 과반 확정</b>' : `확정 의석 · 민주 과반까지 <b class="num">${C.maj - d}</b>석, 공화 ${k === 'senate' ? '수성' : '과반'}까지 <b class="num">${C.rmaj - r}</b>석`;
     $(k === 'house' ? 'liveHouse' : 'liveSenate').innerHTML = `
-      <div class="top"><h3>${C.name}</h3><div class="prob"><small>민주 승리 확률</small><b>${pct(m.p)}</b>${chg(m.c)}</div></div>
+      <div class="top"><h3>${C.name}<small>${C.total}석</small></h3><div class="prob"><small>민주 승리 확률</small><b>${pct(m.p)}</b>${chg(m.c)}</div></div>
       <div class="bar"><i class="d" style="width:${(m.p || 0) * 100}%"></i><i class="r" style="width:${(1 - (m.p || 0)) * 100}%"></i></div>
       <div class="seatline">${line}</div>
       <div class="seatbar">${d ? `<i class="d" style="width:${d / C.total * 100}%">민주 ${d}</i>` : ''}${r ? `<i class="r" style="width:${r / C.total * 100}%">공화 ${r}</i>` : ''}<span class="maj" style="left:${C.maj / C.total * 100}%"></span></div>
@@ -501,8 +596,24 @@ function renderLive() {
     const dP = o ? Math.round(o.d * 100) : null;
     const bar = o ? `<div class="oddsbar"><i class="d" style="width:${o.d * 100}%">${dP >= 12 ? dP + '%' : ''}</i><i class="r" style="width:${(1 - o.d) * 100}%">${100 - dP >= 12 ? (100 - dP) + '%' : ''}</i></div>` : '<span class="seat-now">-</span>';
     return `<tr><td>${r.st}${call ? `<span class="tag ${call.toLowerCase()}">${call === 'D' ? '민주' : '공화'} 승</span>` : ''}</td><td class="seat-now">${r.now === 'D' ? '민주' : '공화'}</td>
-      <td class="cand">${esc(o?.dn || r.d)} vs ${esc(o?.rn || r.r)}</td><td>${bar}</td></tr>`;
+      <td class="cand">${esc(o?.dn || r.d)} vs ${esc(o?.rn || r.r)}</td><td>${bar}</td><td class="note">${esc(r.note)}</td></tr>`;
   }).join('');
+}
+
+function renderTicker() {
+  const h = L.house || {}, s = L.senate || {}, lv = cfg().live || {};
+  const n = Object.keys(S.data.picks || {}).length;
+  const ch = v => v == null || Math.abs(v) < .005 ? '' : `<i class="${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲' : '▼'}${Math.abs(Math.round(v * 100))}</i>`;
+  const items = [
+    ['HOUSE D', `<b class="d">${pct(h.p)}</b>${ch(h.c)}`],
+    ['SENATE D', `<b class="d">${pct(s.p)}</b>${ch(s.c)}`],
+    ['하원 확정', `<b class="d">${+lv.houseD || 0}</b><b>:</b><b class="r">${+lv.houseR || 0}</b>`],
+    ['상원 의석', `<b class="d">${34 + (+lv.senateD || 0)}</b><b>:</b><b class="r">${31 + (+lv.senateR || 0)}</b>`],
+    ['여론조사', '<b class="a">D+8.6</b>'],
+    ['사전투표', '<b>5,300만+</b>'],
+    ['사무실 참여', `<b class="a">${n}명</b>`],
+  ];
+  $('ticker').innerHTML = items.map(([k, v]) => `<div class="tk"><span>${k}</span>${v}</div>`).join('');
 }
 
 function renderMine() {
@@ -558,7 +669,7 @@ function renderBoard() {
   if (S.mode === 'error') { el.innerHTML = '<p class="empty">집계를 불러오지 못했어요</p>'; return; }
   const rows = Object.entries(S.data.picks).filter(([, p]) => p && (p.house === 'D' || p.house === 'R')).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
   const n = rows.length, me = S.draft.name.trim();
-  $('boardMeta').innerHTML = `<b class="num" style="color:var(--fg)">${n}</b>명 참여${S.updated ? ` · ${kstT.format(S.updated)}` : ''}`;
+  $('boardMeta').textContent = `${n}명 참여${S.updated ? ` · ${kstT.format(S.updated)}` : ''}`;
   const c = (k, v) => rows.filter(([, p]) => p[k] === v).length;
   const per = x => n ? Math.round(x / n * 100) : 0;
   const stat = (k, title) => {
@@ -629,7 +740,7 @@ function bindAdmin(el) {
 
 function render() {
   const a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
-  renderClock(); renderLive(); renderMine(); renderBoard();
+  renderClock(); renderLive(); renderTicker(); renderMine(); renderBoard();
   if (id) { const n = document.getElementById(id); if (n) { n.focus(); try { if (pos != null) n.setSelectionRange(pos, pos); } catch (e) {} } }
 }
 
